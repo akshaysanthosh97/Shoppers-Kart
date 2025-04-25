@@ -70,43 +70,79 @@ app.use(fileupload());
 // Connect to database before setting up routes
 db.connect((err)=>{
   if(err) {
-    console.log("Connection error: "+err);
-    // Render an error page instead of setting up routes
-    app.use('/', (req, res) => {
-      res.render('error', { 
+    console.error("Database connection error:", err);
+    // Set up a middleware to handle all requests when database is down
+    app.use((req, res) => {
+      res.status(503).render('error', { 
+        title: 'Service Unavailable',
         message: 'Database connection failed', 
-        error: { status: 500, stack: err.message } 
+        error: { 
+          status: 503, 
+          stack: 'The service is temporarily unavailable due to database connection issues. Please try again later.'
+        }
       });
     });
   } else {
     console.log("Database connected successfully");
     
-    // Only set up routes after database connection is established
+    // Set up routes after database connection is established
     app.use('/', indexRouter);
     app.use('/users', usersRouter);
     app.use('/admin', adminRouter);
+    
+    // Set up 404 handler after all routes
+    app.use((req, res) => {
+      res.status(404).render('error', {
+        title: 'Page Not Found',
+        message: 'Page Not Found',
+        error: {
+          status: 404,
+          stack: 'The requested URL ' + req.url + ' was not found on this server.'
+        }
+      });
+    });
   }
 });
 
-// Ensure database is connected before starting the server
-if (!db.get()) {
-  console.log("Waiting for database connection to be established...");
-}
+// Monitor database connection status
+setInterval(() => {
+  if (!db.get()) {
+    console.log("Database connection not established. Retrying...");
+    db.connect((err) => {
+      if (err) {
+        console.error("Database reconnection failed:", err);
+      }
+    });
+  }
+}, 5000); // Check every 5 seconds
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  res.status(404).render('error', {
+    message: 'Page Not Found',
+    error: {
+      status: 404,
+      stack: 'The requested URL ' + req.url + ' was not found on this server.'
+    }
+  });
 });
 
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.message = err.message || 'An error occurred';
+  res.locals.error = req.app.get('env') === 'development' ? err : {
+    status: err.status || 500,
+    stack: 'Internal Server Error'
+  };
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', {
+    message: res.locals.message,
+    error: res.locals.error,
+    title: 'Error'
+  });
 });
 
 module.exports = app;

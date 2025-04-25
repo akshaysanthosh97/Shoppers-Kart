@@ -7,7 +7,7 @@
 
 ## 📋 Table of Contents
 
-- [Project Overview](#project-overview)
+- [Project Overview](#Project-Overview)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
@@ -19,6 +19,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 
+<a id="Project Overview"></a>
 ## 🔍 Project Overview
 
 Shopping Kart is a comprehensive full-stack e-commerce application designed to efficiently manage products, categories, and inventory. It provides an intuitive interface for administrators to add, edit, and delete products, as well as manage stock levels. The application features both admin and user interfaces, allowing for complete e-commerce functionality.
