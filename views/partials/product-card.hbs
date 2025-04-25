@@ -1,0 +1,14 @@
+<div class="product-card">
+  {{#if badge}}
+    <div class="product-badge {{badge}}">{{badge}}</div>
+  {{/if}}
+  <img src="{{image}}" alt="{{name}}" class="product-image">
+  <div class="card-body">
+    <h3 class="card-title">{{name}}</h3>
+    <p class="price">{{price}}</p>
+    <p class="description">{{description}}</p>
+    <button class="add-to-cart" data-id="{{id}}">
+      <i class="bi bi-cart-plus"></i> Add to Cart
+    </button>
+  </div>
+</div>

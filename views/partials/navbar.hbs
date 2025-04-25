@@ -1,0 +1,105 @@
+<nav class="navbar navbar-expand-lg navbar-glass fixed-top {{#if isAdmin}}navbar-admin{{else}}navbar-user{{/if}}">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/images/shopers-kart-logo.PNG" alt="Shopers Kart Logo" class="logo-image">
+      <span class="brand-name">Shoppers Kart</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      {{#if isAdmin}}
+      <!-- Admin Navigation -->
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item">
+          <a class="nav-link {{#unless isProductsPage}}active{{/unless}}" aria-current="page" href="/admin/dashboard">
+            <i class="bi bi-speedometer2 me-2 fs-5 align-middle"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {{#if isProductsPage}}active{{/if}}" href="/admin/products">
+            <i class="bi bi-box-seam me-2 fs-5 align-middle"></i>
+            <span>Products</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="bi bi-people me-2 fs-5 align-middle"></i>
+            <span>Users</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="bi bi-graph-up me-2 fs-5 align-middle"></i>
+            <span>Sales</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="bi bi-gear me-2 fs-5 align-middle"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <li class="nav-item ms-2">
+          <a class="nav-link" href="/">
+            <i class="bi bi-box-arrow-right fs-5"></i>
+          </a>
+        </li>
+      </ul>
+      {{else}}
+      <!-- User Navigation -->
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/">
+            <i class="bi bi-house-door me-2 fs-5 align-middle"></i>
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-grid-3x3-gap me-2 fs-5 align-middle"></i>
+            <span>Products</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end animate slideIn shadow-sm" aria-labelledby="productsDropdown">
+            <li><a class="dropdown-item py-2" href="#"><i class="bi bi-laptop me-2"></i>Electronics</a></li>
+            <li><a class="dropdown-item py-2" href="#"><i class="bi bi-bag me-2"></i>Clothing</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item py-2" href="#"><i class="bi bi-grid-3x3 me-2"></i>All Categories</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="bi bi-info-circle me-2 fs-5 align-middle"></i>
+            <span>About</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="bi bi-person me-2 fs-5 align-middle"></i>
+            <span>My Account</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="bi bi-heart me-2 fs-5 align-middle"></i>
+            <span>Wishlist</span>
+          </a>
+        </li>
+        <li class="nav-item ms-2">
+          <a class="nav-link position-relative p-2" href="#">
+            <i class="bi bi-cart3 fs-4"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+          </a>
+        </li>
+        <li class="nav-item ms-2">
+          <a class="nav-link btn btn-outline-primary btn-sm px-3 rounded-pill" href="/admin/dashboard">
+            <i class="bi bi-shield-lock me-1"></i>
+            <span>Admin</span>
+          </a>
+        </li>
+      </ul>
+      {{/if}}
+    </div>
+  </div>
+</nav>

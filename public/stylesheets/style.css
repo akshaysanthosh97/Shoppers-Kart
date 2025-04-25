@@ -1,0 +1,522 @@
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  margin: 0 auto;
+  padding-top: 75px; /* Adjusted for more compact navbar */
+  color: #333;
+}
+
+a {
+  color: #00B7FF;
+}
+
+/* Modern Navbar Styles - Enhanced for logo prominence */
+.navbar-glass, .navbar-user {
+  background-color: rgba(255, 255, 255, 0.98); /* Standardized opacity for consistent contrast */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(230, 230, 230, 0.9);
+  padding: 0.5rem 0; /* Standardized padding for consistent navbar height */
+  height: auto; /* Allow height to adjust to content */
+  min-height: 60px; /* Standardized minimum height */
+}
+
+/* Logo Styling - Clean with no padding or border */
+.logo-image {
+  transition: all 0.3s ease;
+  max-height: 55px; /* Increased for larger logo display */
+  min-height: 50px; /* Increased minimum height */
+  width: auto;
+  object-fit: cover; /* Changed to cover to fill available space */
+  object-position: center; /* Center the logo */
+  margin-right: 8px; /* Reduced spacing to allow more room for logo */
+  margin-left: -5px; /* Negative margin to maximize space */
+  display: block; /* Ensure proper display */
+}
+
+.navbar-brand:hover .logo-image {
+  transform: scale(1.12); /* Further increased scale effect for more prominence */
+  opacity: 1; /* Full opacity for maximum visibility */
+}
+
+/* Brand Name Styling */
+.brand-name {
+  font-family: 'Poppins', 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #000;
+  letter-spacing: -0.02em;
+  margin-left: 2px;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover .brand-name {
+  color: #0d6efd;
+}
+
+.navbar-admin .brand-name {
+  color: #000; /* Changed to match user navbar */
+}
+
+.navbar-admin .navbar-brand:hover .brand-name {
+  color: #0d6efd; /* Changed to match user navbar */
+}
+
+/* Navbar scroll effect */
+.navbar-scrolled {
+  padding: 0.5rem 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-admin.navbar-scrolled {
+  background-color: rgba(255, 255, 255, 0.95); /* Changed to match user navbar */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); /* Changed to match user navbar */
+}
+
+/* Admin Navbar Styling - Standardized with user navbar */
+.navbar-admin {
+  background-color: rgba(255, 255, 255, 0.98); /* Changed to match user navbar */
+  border-bottom: 1px solid rgba(230, 230, 230, 0.9); /* Changed to match user navbar */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12); /* Changed to match user navbar */
+  transition: all 0.3s ease;
+  padding: 0.5rem 0; /* Standardized padding to match user navbar */
+  height: auto;
+  min-height: 60px; /* Standardized height to match user navbar */
+}
+
+.navbar-admin .navbar-nav .nav-link {
+  color: #333; /* Changed to match user navbar */
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+.navbar-admin .navbar-nav .nav-link:hover {
+  color: #0d6efd; /* Changed to match user navbar */
+  background-color: rgba(13, 110, 253, 0.05); /* Changed to match user navbar */
+  transform: translateY(-1px);
+}
+
+.navbar-admin .navbar-nav .nav-link.active {
+  color: #0d6efd; /* Changed to match user navbar */
+  position: relative;
+  font-weight: 700;
+  background-color: rgba(13, 110, 253, 0.08); /* Changed to match user navbar */
+}
+
+.navbar-admin .brand-name {
+  color: #ffffff;
+}
+
+.navbar-admin.navbar-scrolled {
+  background-color: rgba(255, 255, 255, 0.95); /* Changed to match user navbar */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); /* Changed to match user navbar */
+}
+
+.navbar-glass .navbar-nav .nav-link {
+  color: #333;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  padding: 0.6rem 1.2rem;
+  margin: 0 0.25rem; /* Increased for more even spacing */
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-glass .navbar-nav .nav-link:hover {
+  color: #0d6efd;
+  background-color: rgba(13, 110, 253, 0.05);
+  transform: translateY(-1px);
+}
+
+.navbar-glass .navbar-nav .nav-link.active {
+  color: #0d6efd;
+  position: relative;
+  font-weight: 700;
+  background-color: rgba(13, 110, 253, 0.08);
+}
+
+.navbar-glass .navbar-nav .nav-link.active:after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background-color: #0d6efd;
+  border-radius: 4px;
+}
+
+.brand-gradient {
+  background: linear-gradient(45deg, #3a86ff, #4895ef);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 5px rgba(58, 134, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover .brand-gradient {
+  filter: brightness(1.05);
+  text-shadow: 0 1px 8px rgba(58, 134, 255, 0.15);
+  transform: scale(1.01);
+}
+
+/* Logo styling - Clean and minimal */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin-right: 0.75rem;
+  position: relative;
+  z-index: 10; /* Ensure logo stays above other elements */
+  height: 100%; /* Ensure full height usage */
+}
+
+.navbar-brand img {
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover img {
+  transform: scale(1.02);
+  filter: drop-shadow(0 1px 3px rgba(58, 134, 255, 0.15));
+}
+
+/* Dropdown animation */
+.animate {
+  animation-duration: 0.3s;
+  -webkit-animation-duration: 0.3s;
+  animation-fill-mode: both;
+  -webkit-animation-fill-mode: both;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0rem);
+    opacity: 1;
+  }
+}
+
+.slideIn {
+  -webkit-animation-name: slideIn;
+  animation-name: slideIn;
+}
+
+/* Cart Icon Styling */
+/* Cart Icon Styling - Enhanced for better clickability */
+.nav-link .bi-cart3 {
+  transition: transform 0.3s ease;
+}
+
+/* Specific styling for the cart icon link to make it more clickable */
+.navbar-nav .nav-item:last-child .nav-link {
+  padding: 0.6rem 1rem;
+  margin: 0 0.1rem;
+  border-radius: 6px;
+  background-color: rgba(13, 110, 253, 0.02);
+  min-width: 48px; /* Minimum touch target size */
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar-nav .nav-item:last-child .nav-link:hover {
+  background-color: rgba(13, 110, 253, 0.08);
+  transform: translateY(-1px);
+}
+
+.nav-link:hover .bi-cart3 {
+  transform: scale(1.15);
+}
+
+.nav-link .badge {
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(25%, -25%);
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.nav-link:hover .badge {
+  transform: translate(25%, -25%) scale(1.1) !important;
+}
+
+.navbar-nav .nav-item:last-child .nav-link:hover .badge {
+  transform: translate(25%, -25%) scale(1.1) !important;
+}
+
+/* Ensure the cart icon link has proper positioning for the badge */
+.navbar-nav .nav-item:last-child .nav-link {
+  position: relative;
+}
+
+/* Enhanced Dropdown Styling */
+.dropdown-menu {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  font-weight: 500;
+  color: #444;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(13, 110, 253, 0.08);
+  color: #0d6efd;
+  transform: translateX(3px);
+}
+
+.dropdown-divider {
+  margin: 0.5rem 0;
+  opacity: 0.1;
+}
+
+header {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+header nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+/* Enhanced Product Card Styling */
+.product-card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgba(13, 110, 253, 0.15);
+}
+
+.product-card .card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-card .card-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #333;
+  line-height: 1.3;
+}
+
+.product-card .description {
+  color: #666;
+  margin-bottom: 1.25rem;
+  flex-grow: 1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Product Image Styling */
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.5s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.03);
+}
+
+/* Price Styling */
+.price {
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #e63946;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.price::before {
+  content: '$';
+  font-size: 1rem;
+  margin-right: 2px;
+  vertical-align: top;
+  position: relative;
+  top: -2px;
+}
+
+/* Add to Cart Button Styling */
+.add-to-cart {
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: auto;
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+}
+
+.add-to-cart:hover {
+  background-color: #0b5ed7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3);
+}
+
+.add-to-cart:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
+}
+
+.add-to-cart i {
+  font-size: 1.1rem;
+}
+
+/* Product Badge */
+.product-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(220, 53, 69, 0.9);
+  color: white;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 2;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.product-badge.new {
+  background: rgba(13, 110, 253, 0.9);
+}
+
+.product-badge.sale {
+  background: rgba(220, 53, 69, 0.9);
+}
+
+footer {
+  margin-top: 50px;
+  text-align: center;
+  color: #666;
+}
+
+/* Hero Section Styling */
+.hero-title {
+  font-weight: 800; /* Increased font weight for bolder appearance */
+  color: #000;
+  letter-spacing: -0.02em;
+  font-family: 'Poppins', 'Montserrat', sans-serif;
+}
+
+/* Mobile Responsive Navbar Styles - Standardized for all navbar types */
+@media (max-width: 991.98px) {
+  body {
+    padding-top: 110px; /* Standardized padding for mobile */
+  }
+  
+  .navbar-glass, .navbar-user, .navbar-admin {
+    min-height: 90px; /* Standardized height for all navbar types */
+  }
+  
+  .logo-image {
+    max-height: 65px; /* Standardized logo size */
+    min-height: 55px;
+    margin: 0 auto 0 0; /* Push to left edge */
+  }
+  
+  .navbar-collapse {
+    padding: 1rem 0;
+    margin-top: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.98);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-admin .navbar-collapse {
+    background-color: rgba(255, 255, 255, 0.98); /* Changed to match user navbar */
+  }
+  
+  .navbar-nav .nav-item {
+    margin: 0.5rem 0;
+  }
+  
+  .navbar-glass .navbar-nav .nav-link,
+  .navbar-user .navbar-nav .nav-link,
+  .navbar-admin .navbar-nav .nav-link {
+    padding: 0.8rem 1.2rem;
+    margin: 0.3rem 0;
+    display: block;
+    border-radius: 8px;
+  }
+  
+  .dropdown-menu {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0;
+  }
+  
+  .dropdown-item {
+    padding: 0.5rem 1.5rem;
+  }
+}

@@ -1,0 +1,72 @@
+<div class="container mt-4">
+  {{> navbar isProductsPage=true}}
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <div>
+      <h1 class="display-4">Add New Product</h1>
+      <p class="lead">Create a new product listing for your store</p>
+    </div>
+    <div>
+      <button class="btn btn-outline-secondary rounded-pill" onclick="window.history.back()">
+        <i class="bi bi-arrow-left"></i> Back to Products
+      </button>
+    </div>
+  </div>
+
+  <section class="my-5">
+    <div class="card shadow border-0 hover-shadow">
+      <div class="card-header bg-white border-bottom border-light py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2 text-success"></i>Product Information</h5>
+      </div>
+      <div class="card-body p-4">
+        <form action="/admin/products" method="POST" enctype="multipart/form-data">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="productName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="productName" name="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="productCategory" class="form-label">Category</label>
+                <select class="form-select" id="productCategory" name="category" required>
+                  <option value="" selected disabled>Select a category</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="clothing">Clothing</option>
+                  <option value="home">Home & Kitchen</option>
+                  <option value="books">Books</option>
+                  <option value="toys">Toys & Games</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="productPrice" class="form-label">Price ($)</label>
+                <input type="number" class="form-control" id="productPrice" name="price" step="0.01" min="0" required>
+              </div>
+              <div class="mb-3">
+                <label for="productStock" class="form-label">Stock Quantity</label>
+                <input type="number" class="form-control" id="productStock" name="stock" min="0" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="productImage" class="form-label">Product Image</label>
+                <input type="file" class="form-control" id="productImage" name="image">
+                <div class="form-text">Recommended size: 800x800 pixels</div>
+              </div>
+              <div class="mb-3">
+                <label for="productDescription" class="form-label">Description</label>
+                <textarea class="form-control" id="productDescription" name="description" rows="8" required></textarea>
+              </div>
+            </div>
+            <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+              <button type="reset" class="btn btn-outline-secondary rounded-pill">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+              </button>
+              <button type="submit" class="btn btn-success rounded-pill">
+                <i class="bi bi-check-circle me-1"></i> Create Product
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

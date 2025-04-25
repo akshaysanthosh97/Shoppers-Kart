@@ -1,0 +1,92 @@
+<div class="container mt-4">
+  {{> navbar}}
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <div>
+      <h1 class="display-4">{{title}}</h1>
+      <p class="lead">Welcome to the admin dashboard <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 ms-2"><i class="bi bi-shield-check me-1"></i>Admin Panel</span></p>
+    </div>
+    <a href="/" class="btn btn-outline-primary rounded-pill shadow-sm hover-scale">
+      <i class="bi bi-shop me-2"></i>Back to Shop
+    </a>
+  </div>
+
+  <section class="dashboard-stats my-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <a href="/admin/products" class="text-decoration-none">
+          <div class="card shadow border-0 h-100 dashboard-card hover-lift">
+            <div class="card-body" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border-radius: 0.75rem;">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0 fw-bold">Total Products</h5>
+                <div class="icon-circle bg-white bg-opacity-25 pulse-light">
+                  <i class="bi bi-box-seam fs-4 text-white"></i>
+                </div>
+              </div>
+              <h2 class="display-5 fw-bold mb-2">{{stats.totalProducts}}</h2>
+              <p class="card-text mb-0 opacity-75">Manage inventory</p>
+              <div class="progress mt-3" style="height: 5px;">
+                <div class="progress-bar bg-white bg-opacity-50" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow border-0 h-100 dashboard-card hover-lift">
+          <div class="card-body" style="background: linear-gradient(135deg, #ec4899, #be185d); color: white; border-radius: 0.75rem;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="card-title mb-0 fw-bold">Total Users</h5>
+              <div class="icon-circle bg-white bg-opacity-25 pulse-light">
+                <i class="bi bi-people fs-4 text-white"></i>
+              </div>
+            </div>
+            <h2 class="display-5 fw-bold mb-2">{{stats.totalUsers}}</h2>
+            <p class="card-text mb-0 opacity-75">Active accounts</p>
+            <div class="progress mt-3" style="height: 5px;">
+              <div class="progress-bar bg-white bg-opacity-50" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow border-0 h-100 dashboard-card hover-lift">
+          <div class="card-body" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border-radius: 0.75rem;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="card-title mb-0 fw-bold">Revenue</h5>
+              <div class="icon-circle bg-white bg-opacity-25 pulse-light">
+                <i class="bi bi-graph-up fs-4 text-white"></i>
+              </div>
+            </div>
+            <h2 class="display-5 fw-bold mb-2">${{stats.revenue}}</h2>
+            <p class="card-text mb-0 opacity-75">Total earnings</p>
+            <div class="progress mt-3" style="height: 5px;">
+              <div class="progress-bar bg-white bg-opacity-50" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="recent-orders my-5">
+    <div class="card shadow border-0 hover-shadow">
+      <div class="card-header d-flex justify-content-between align-items-center bg-white border-bottom border-light py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-bag-check me-2 text-primary"></i>Recent Orders</h5>
+        <span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm">{{stats.pendingOrders}} Pending</span>
+      </div>
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <p class="mb-0 fs-5">Total Orders: <span class="fw-bold text-primary">{{stats.totalOrders}}</span></p>
+          <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill hover-scale">Today</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill hover-scale">Week</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill hover-scale">Month</button>
+          </div>
+        </div>
+        <div class="alert border-0 shadow-sm" style="background: linear-gradient(to right, rgba(99, 102, 241, 0.08), rgba(79, 70, 229, 0.08)); border-left: 4px solid #6366f1;">
+          <i class="bi bi-info-circle me-2 text-primary"></i> This is a placeholder for the orders table.
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,75 @@
+<div class="container mt-4">
+  {{> navbar isProductsPage=true}}
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <div>
+      <h1 class="display-4">Products Management</h1>
+      <p class="lead">Manage your store inventory <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 ms-2"><i class="bi bi-box-seam me-1"></i>{{stats.totalProducts}} Products</span></p>
+    </div>
+    <div>
+      <button class="btn btn-outline-secondary rounded-pill me-2" onclick="window.history.back()">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <a href="/admin/products/new" class="btn btn-success rounded-pill">
+        <i class="bi bi-plus-circle me-1"></i> Add New Product
+      </a>
+    </div>
+  </div>
+
+  <section class="products-list my-5">
+    <div class="card shadow border-0 hover-shadow">
+      <div class="card-header d-flex justify-content-between align-items-center bg-white border-bottom border-light py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-box-seam me-2 text-primary"></i>All Products</h5>
+        <div class="input-group" style="max-width: 300px;">
+          <input type="text" class="form-control rounded-pill rounded-end" placeholder="Search products...">
+          <button class="btn btn-primary rounded-pill rounded-start" type="button"><i class="bi bi-search"></i></button>
+        </div>
+      </div>
+      <div class="card-body p-4">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">Image</th>
+                <th scope="col">Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Price</th>
+                <th scope="col">Stock</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each products}}
+              <tr>
+                <td><img src="{{this.image}}" alt="{{this.name}}" width="50" height="50" class="rounded"></td>
+                <td>{{this.name}}</td>
+                <td><span class="badge bg-info text-dark">{{this.category}}</span></td>
+                <td>${{this.price}}</td>
+                <td><span class="badge bg-success">In Stock</span></td>
+                <td>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></button>
+                    <button type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                  </div>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        <nav aria-label="Products pagination" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </section>
+</div>
