@@ -1,0 +1,82 @@
+<div class="container mt-4">
+  {{> navbar isProductsPage=true}}
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <div>
+      <h1 class="display-4">Edit Product</h1>
+      <p class="lead">Update product information</p>
+    </div>
+    <div>
+      <button class="btn btn-outline-secondary rounded-pill" onclick="window.history.back()">
+        <i class="bi bi-arrow-left"></i> Back to Products
+      </button>
+    </div>
+  </div>
+
+  <section class="my-5">
+    <div class="card shadow border-0 hover-shadow">
+      <div class="card-header bg-white border-bottom border-light py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Product Information</h5>
+      </div>
+      <div class="card-body p-4">
+        <form action="/admin/products/{{product._id}}" method="POST" enctype="multipart/form-data">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="productName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="productName" name="name" value="{{product.name}}" required>
+              </div>
+              <div class="mb-3">
+                <label for="productCategory" class="form-label">Category</label>
+                <select class="form-select" id="productCategory" name="category" required>
+                  <option value="Electronics" {{#if (eq product.category "Electronics")}}selected{{/if}}>Electronics</option>
+                  <option value="Clothing" {{#if (eq product.category "Clothing")}}selected{{/if}}>Clothing</option>
+                  <option value="Home & Kitchen" {{#if (eq product.category "Home & Kitchen")}}selected{{/if}}>Home & Kitchen</option>
+                  <option value="Books" {{#if (eq product.category "Books")}}selected{{/if}}>Books</option>
+                  <option value="Toys & Games" {{#if (eq product.category "Toys & Games")}}selected{{/if}}>Toys & Games</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="productPrice" class="form-label">Price ($)</label>
+                <input type="number" step="0.01" class="form-control" id="productPrice" name="price" value="{{product.price}}" required>
+              </div>
+              <div class="mb-3">
+                <label for="productBadge" class="form-label">Badge (Optional)</label>
+                <select class="form-select" id="productBadge" name="badge">
+                  <option value="" {{#unless product.badge}}selected{{/unless}}>None</option>
+                  <option value="new" {{#if (eq product.badge "new")}}selected{{/if}}>New</option>
+                  <option value="sale" {{#if (eq product.badge "sale")}}selected{{/if}}>Sale</option>
+                  <option value="featured" {{#if (eq product.badge "featured")}}selected{{/if}}>Featured</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="productDescription" class="form-label">Description</label>
+                <textarea class="form-control" id="productDescription" name="description" rows="5" required>{{product.description}}</textarea>
+              </div>
+              <div class="mb-3">
+                <label for="productImage" class="form-label">Product Image</label>
+                <input type="file" class="form-control" id="productImage" name="image">
+                <div class="form-text">Leave empty to keep current image</div>
+                {{#if product.image}}
+                <div class="mt-2">
+                  <p>Current image:</p>
+                  <img src="{{product.image}}" alt="{{product.name}}" class="img-thumbnail" style="max-height: 150px">
+                </div>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between mt-4">
+            <a href="/admin/products/{{product._id}}/delete" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this product?')">
+              <i class="bi bi-trash"></i> Delete Product
+            </a>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

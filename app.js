@@ -6,6 +6,7 @@ var logger = require('morgan');
 var hbs = require('hbs');
 var fs = require('fs');
 var fileupload = require('express-fileupload');
+var db=require('./config/connection');
 
 
 var indexRouter = require('./routes/index');
@@ -46,6 +47,11 @@ if (fs.existsSync(adminPartialsPath)) {
   registerPartials(adminPartialsPath, 'admin/partials/');
 }
 
+// Register custom Handlebars helpers
+hbs.registerHelper('eq', function (a, b) {
+  return a === b;
+});
+
 // Log registered partials for debugging
 console.log('Registered partials:', Object.keys(hbs.handlebars.partials));
 
@@ -61,10 +67,31 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileupload());
 
+// Connect to database before setting up routes
+db.connect((err)=>{
+  if(err) {
+    console.log("Connection error: "+err);
+    // Render an error page instead of setting up routes
+    app.use('/', (req, res) => {
+      res.render('error', { 
+        message: 'Database connection failed', 
+        error: { status: 500, stack: err.message } 
+      });
+    });
+  } else {
+    console.log("Database connected successfully");
+    
+    // Only set up routes after database connection is established
+    app.use('/', indexRouter);
+    app.use('/users', usersRouter);
+    app.use('/admin', adminRouter);
+  }
+});
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/admin', adminRouter);
+// Ensure database is connected before starting the server
+if (!db.get()) {
+  console.log("Waiting for database connection to be established...");
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
