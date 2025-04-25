@@ -116,17 +116,6 @@ setInterval(() => {
   }
 }, 5000); // Check every 5 seconds
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  res.status(404).render('error', {
-    message: 'Page Not Found',
-    error: {
-      status: 404,
-      stack: 'The requested URL ' + req.url + ' was not found on this server.'
-    }
-  });
-});
-
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
