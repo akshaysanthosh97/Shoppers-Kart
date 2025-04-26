@@ -158,34 +158,67 @@ router.put('/products/:id', function(req, res, next) {
     badge: req.body.badge || null
   };
   
-  productHelpers.updateProduct(productId, productData).then(() => {
-    // Handle image update if present
-    if (req.files && req.files.image) {
-      let image = req.files.image;
-      image.mv('./public/product-images/'+productId+'.jpg', (err) => {
-        if (err) {
-          console.error('Error updating image:', err);
+  productHelpers.updateProduct(productId, productData)
+    .then((result) => {
+      console.log('Product update result:', result);
+      // Handle image update if present
+      if (req.files && req.files.image) {
+        let image = req.files.image;
+        // Create directory if it doesn't exist
+        const fs = require('fs');
+        const dir = './public/product-images';
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
         }
+        
+        image.mv('./public/product-images/'+productId+'.jpg', (err) => {
+          if (err) {
+            console.error('Error updating image:', err);
+          }
+          res.redirect('/admin/products');
+        });
+      } else {
         res.redirect('/admin/products');
-      });
-    } else {
-      res.redirect('/admin/products');
-    }
-  }).catch(err => {
-    console.error('Error updating product:', err);
-    res.render('error', { message: 'Failed to update product', error: err });
-  });
+      }
+    })
+    .catch(err => {
+      console.error('Error updating product:', err);
+      res.render('error', { message: 'Failed to update product', error: err });
+    });
 });
 
 /* DELETE product */
 router.delete('/products/:id', function(req, res, next) {
   const productId = req.params.id;
-  productHelpers.deleteProduct(productId).then(() => {
-    res.redirect('/admin/products');
-  }).catch(err => {
-    console.error('Error deleting product:', err);
-    res.render('error', { message: 'Failed to delete product', error: err });
-  });
+  console.log('Deleting product with ID:', productId);
+  
+  productHelpers.deleteProduct(productId)
+    .then((result) => {
+      console.log('Product delete result:', result);
+      // Check if the product was actually deleted
+      if (result.deletedCount === 0) {
+        console.warn('No product was deleted with ID:', productId);
+      }
+      
+      // Try to remove the product image if it exists
+      try {
+        const fs = require('fs');
+        const imagePath = './public/product-images/' + productId + '.jpg';
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+          console.log('Product image deleted successfully');
+        }
+      } catch (err) {
+        console.error('Error deleting product image:', err);
+        // Continue with redirect even if image deletion fails
+      }
+      
+      res.redirect('/admin/products');
+    })
+    .catch(err => {
+      console.error('Error deleting product:', err);
+      res.render('error', { message: 'Failed to delete product', error: err });
+    });
 });
 
 module.exports = router;

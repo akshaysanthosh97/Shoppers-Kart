@@ -31,6 +31,23 @@ module.exports.connect = function(done){
 module.exports.get = function(){
     if (!State.db) {
         console.error('Database connection not established yet. Make sure to call connect() first.');
+        // Return null to allow the caller to handle the error
     }
     return State.db;
+};
+
+// Close database connection when the application is shutting down
+module.exports.close = function() {
+    if (State.client) {
+        console.log('Closing database connection');
+        State.client.close()
+            .then(() => {
+                console.log('Database connection closed successfully');
+                State.db = null;
+                State.client = null;
+            })
+            .catch(err => {
+                console.error('Error closing database connection:', err);
+            });
+    }
 };

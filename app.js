@@ -6,6 +6,7 @@ var logger = require('morgan');
 var hbs = require('hbs');
 var fs = require('fs');
 var fileupload = require('express-fileupload');
+var methodOverride = require('method-override');
 var db=require('./config/connection');
 
 
@@ -66,6 +67,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileupload());
+
+// Method override middleware to support PUT and DELETE in forms
+app.use(methodOverride('_method'));
+
 
 // Connect to database before setting up routes
 db.connect((err)=>{
