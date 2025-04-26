@@ -1,0 +1,55 @@
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>Search Results for "{{searchQuery}}"</h1>
+      <p>Found {{products.length}} products matching your search.</p>
+      
+      <!-- Search form for additional searches -->
+      <form action="/search" method="GET" class="mb-4">
+        <div class="input-group">
+          <input type="text" name="q" class="form-control" placeholder="Search products..." value="{{searchQuery}}" required>
+          {{#if isAdmin}}
+          <input type="hidden" name="admin" value="true">
+          {{/if}}
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  {{#if products.length}}
+  <div class="row">
+    {{#each products}}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        {{#if this.image}}
+        <img src="{{this.image}}" class="card-img-top" alt="{{this.name}}">
+        {{else}}
+        <img src="/images/product-placeholder.jpg" class="card-img-top" alt="Product placeholder">
+        {{/if}}
+        <div class="card-body">
+          {{#if this.badge}}
+          <span class="badge badge-primary mb-2">{{this.badge}}</span>
+          {{/if}}
+          <h5 class="card-title">{{this.name}}</h5>
+          <p class="card-text">{{this.description}}</p>
+          <p class="card-text font-weight-bold">${{this.price}}</p>
+          <a href="#" class="btn btn-primary">Add to Cart</a>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <div class="row">
+    <div class="col-12">
+      <div class="alert alert-info">
+        No products found matching your search. Try different keywords.
+      </div>
+      <a href="/" class="btn btn-primary">Back to Home</a>
+    </div>
+  </div>
+  {{/if}}
+</div>

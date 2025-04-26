@@ -64,6 +64,30 @@ router.get('/products', function(req, res, next) {
   });
 });
 
+/* Search products - AJAX endpoint */
+router.get('/search-products', function(req, res, next) {
+  const searchQuery = req.query.q || '';
+  
+  // If search query is empty, return all products
+  if (!searchQuery.trim()) {
+    productHelpers.getAllProducts().then((products) => {
+      res.json(products);
+    }).catch(err => {
+      console.error('Error fetching all products:', err);
+      res.status(500).json({ error: 'Failed to fetch products' });
+    });
+    return;
+  }
+  
+  // Search for products matching the query
+  productHelpers.searchProducts(searchQuery).then((products) => {
+    res.json(products);
+  }).catch(err => {
+    console.error('Error searching products:', err);
+    res.status(500).json({ error: 'Failed to search products' });
+  });
+});
+
 /* GET new product form */
 router.get('/products/new', function(req, res, next) {
   res.render('admin/admin-product-new', { 

@@ -29,6 +29,34 @@ const ensureDbConnection = async () => {
 };
 
 module.exports = {
+    searchProducts: (searchQuery) => {
+        return new Promise((resolve, reject) => {
+            ensureDbConnection()
+                .then(database => {
+                    // Create a query that searches in both name and description fields
+                    const query = {
+                        $or: [
+                            { name: { $regex: searchQuery, $options: 'i' } },
+                            { description: { $regex: searchQuery, $options: 'i' } },
+                            { category: { $regex: searchQuery, $options: 'i' } }
+                        ]
+                    };
+                    
+                    database.collection('products').find(query).toArray()
+                        .then(products => {
+                            resolve(products);
+                        })
+                        .catch(err => {
+                            console.error('Error searching products:', err);
+                            reject(err);
+                        });
+                })
+                .catch(err => {
+                    reject(err);
+                });
+        });
+    },
+    
     addProduct: (product, callback) => {
         ensureDbConnection()
             .then(database => {

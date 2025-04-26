@@ -21,6 +21,28 @@ router.get('/', function(req, res, next) {
   });
 });
 
+/* GET search results */
+router.get('/search', function(req, res, next) {
+  const searchQuery = req.query.q;
+  const isAdmin = req.query.admin === 'true';
+  
+  if (!searchQuery) {
+    return res.redirect('/');
+  }
+  
+  productHelpers.searchProducts(searchQuery).then((products) => {
+    res.render('search-results', { 
+      title: 'Search Results',
+      searchQuery: searchQuery,
+      products: products,
+      isAdmin: isAdmin
+    });
+  }).catch(err => {
+    console.error('Error searching products:', err);
+    res.render('error', { message: 'Failed to search products', error: err });
+  });
+});
+
 
 
 module.exports = router;
