@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var productHelpers = require('../helpers/product-helpers')
+var productHelpers = require('../helpers/product-helpers');
+var userHelpers = require('../helpers/user-helpers');
+var orderHelpers = require('../helpers/order-helpers');
 
 /* GET admin dashboard page */
 router.get('/dashboard', function(req, res, next) {
@@ -8,19 +10,35 @@ router.get('/dashboard', function(req, res, next) {
   // We read the query parameter but still set isAdmin to true for the admin dashboard
   const isAdmin = true;
   
-  // Sample stats for the dashboard
-  const stats = {
-    totalProducts: 156,
-    totalUsers: 1243,
-    totalOrders: 528,
-    pendingOrders: 42,
-    revenue: 25689.75
-  };
-  
-  res.render('admin/admin-dashboard', { 
-    title: 'Admin Dashboard',
-    isAdmin: isAdmin,
-    stats: stats
+  // Get real stats from database
+  productHelpers.getAllProducts().then((products) => {
+    // For now, we only have real product data
+    // In a real application, you would query users and orders collections as well
+    const stats = {
+      totalProducts: products.length,
+      // These are still placeholders until we implement user and order functionality
+      totalUsers: 0,
+      totalOrders: 0,
+      pendingOrders: 0,
+      revenue: 0
+    };
+    
+    // Calculate revenue from products (example calculation)
+    if (products.length > 0) {
+      // Sum up all product prices as a simple revenue calculation
+      stats.revenue = products.reduce((total, product) => {
+        return total + (product.price || 0);
+      }, 0).toFixed(2);
+    }
+    
+    res.render('admin/admin-dashboard', { 
+      title: 'Admin Dashboard',
+      isAdmin: isAdmin,
+      stats: stats
+    });
+  }).catch(err => {
+    console.error('Error fetching data for dashboard:', err);
+    res.render('error', { message: 'Failed to load dashboard data', error: err });
   });
 });
 
@@ -130,7 +148,7 @@ router.get('/products/:id/edit', function(req, res, next) {
 });
 
 /* PUT update product */
-router.post('/products/:id', function(req, res, next) {
+router.put('/products/:id', function(req, res, next) {
   const productId = req.params.id;
   const productData = {
     name: req.body.name,
@@ -160,7 +178,7 @@ router.post('/products/:id', function(req, res, next) {
 });
 
 /* DELETE product */
-router.get('/products/:id/delete', function(req, res, next) {
+router.delete('/products/:id', function(req, res, next) {
   const productId = req.params.id;
   productHelpers.deleteProduct(productId).then(() => {
     res.redirect('/admin/products');
