@@ -83,5 +83,35 @@ module.exports = {
                     reject(err);
                 });
         });
+    },
+
+    updateOrderStatus: (orderId, newStatus) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                // Update the order status
+                const result = await database.collection('orders').updateOne(
+                    { _id: new ObjectId(orderId) },
+                    { $set: { status: newStatus } }
+                );
+
+                if (result.modifiedCount === 0) {
+                    reject(new Error('Failed to update order status'));
+                    return;
+                }
+
+                // Return the updated order
+                const updatedOrder = await database.collection('orders').findOne({ _id: new ObjectId(orderId) });
+                resolve(updatedOrder);
+            } catch (err) {
+                console.error('Error updating order status:', err);
+                reject(err);
+            }
+        });
     }
 };

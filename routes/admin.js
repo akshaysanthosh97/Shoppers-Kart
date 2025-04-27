@@ -4,6 +4,30 @@ var productHelpers = require('../helpers/product-helpers');
 var userHelpers = require('../helpers/user-helpers');
 var orderHelpers = require('../helpers/order-helpers');
 
+// Middleware to fetch dashboard stats
+async function getDashboardStats() {
+  try {
+    const [products, totalUsers, totalOrders, pendingOrders, revenue] = await Promise.all([
+      productHelpers.getAllProducts(),
+      userHelpers.getTotalUsers(),
+      orderHelpers.getTotalOrders(),
+      orderHelpers.getPendingOrders(),
+      orderHelpers.getTotalRevenue()
+    ]);
+    
+    return {
+      totalProducts: products.length,
+      totalUsers,
+      totalOrders,
+      pendingOrders,
+      revenue
+    };
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    throw error;
+  }
+}
+
 /* GET admin dashboard page */
 router.get('/dashboard', function(req, res, next) {
   // Check for admin parameter in query string - this ensures the navbar displays correctly
@@ -11,25 +35,9 @@ router.get('/dashboard', function(req, res, next) {
   const isAdmin = true;
   
   // Get real stats from database
-  productHelpers.getAllProducts().then((products) => {
-    // For now, we only have real product data
-    // In a real application, you would query users and orders collections as well
-    const stats = {
-      totalProducts: products.length,
-      // These are still placeholders until we implement user and order functionality
-      totalUsers: 0,
-      totalOrders: 0,
-      pendingOrders: 0,
-      revenue: 0
-    };
+  getDashboardStats().then((stats) => {
     
-    // Calculate revenue from products (example calculation)
-    if (products.length > 0) {
-      // Sum up all product prices as a simple revenue calculation
-      stats.revenue = products.reduce((total, product) => {
-        return total + (product.price || 0);
-      }, 0).toFixed(2);
-    }
+
     
     res.render('admin/admin-dashboard', { 
       title: 'Admin Dashboard',
@@ -181,7 +189,6 @@ router.put('/products/:id', function(req, res, next) {
     description: req.body.description,
     badge: req.body.badge || null
   };
-  
   productHelpers.updateProduct(productId, productData)
     .then((result) => {
       console.log('Product update result:', result);
@@ -194,7 +201,6 @@ router.put('/products/:id', function(req, res, next) {
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
         }
-        
         image.mv('./public/product-images/'+productId+'.jpg', (err) => {
           if (err) {
             console.error('Error updating image:', err);
@@ -211,38 +217,91 @@ router.put('/products/:id', function(req, res, next) {
     });
 });
 
-/* DELETE product */
-router.delete('/products/:id', function(req, res, next) {
-  const productId = req.params.id;
-  console.log('Deleting product with ID:', productId);
-  
-  productHelpers.deleteProduct(productId)
-    .then((result) => {
-      console.log('Product delete result:', result);
-      // Check if the product was actually deleted
-      if (result.deletedCount === 0) {
-        console.warn('No product was deleted with ID:', productId);
-      }
-      
-      // Try to remove the product image if it exists
-      try {
-        const fs = require('fs');
-        const imagePath = './public/product-images/' + productId + '.jpg';
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath);
-          console.log('Product image deleted successfully');
-        }
-      } catch (err) {
-        console.error('Error deleting product image:', err);
-        // Continue with redirect even if image deletion fails
-      }
-      
-      res.redirect('/admin/products');
-    })
-    .catch(err => {
-      console.error('Error deleting product:', err);
-      res.render('error', { message: 'Failed to delete product', error: err });
+/* GET admin users page */
+router.get('/users', async function(req, res, next) {
+  try {
+    const users = await userHelpers.getAllUsers();
+    const totalUsers = await userHelpers.getTotalUsers();
+    // Pagination logic can be added here if needed
+    res.render('admin/admin-users', {
+      title: 'Users Management',
+      isAdmin: true,
+      isUsersPage: true,
+      users: users,
+      stats: { totalUsers }
     });
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.render('error', { message: 'Failed to load users', error: err });
+  }
+});
+
+/* GET admin sales page */
+router.get('/sales', async function(req, res, next) {
+  try {
+    const revenue = await orderHelpers.getTotalRevenue();
+    const totalOrders = await orderHelpers.getTotalOrders();
+    const pendingOrders = await orderHelpers.getPendingOrders();
+    res.render('admin/admin-sales', {
+      title: 'Sales Analytics',
+      isAdmin: true,
+      isSalesPage: true,
+      stats: {
+        revenue,
+        totalOrders,
+        pendingOrders
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching sales data:', err);
+    res.render('error', { message: 'Failed to load sales data', error: err });
+  }
+});
+
+/* PUT toggle user status */
+router.put('/users/:id/toggle-status', async function(req, res, next) {
+  try {
+    const userId = req.params.id;
+    const updatedUser = await userHelpers.toggleUserStatus(userId);
+    res.json({ success: true, user: updatedUser });
+  } catch (err) {
+    console.error('Error toggling user status:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/* GET admin orders page */
+router.get('/orders', async function(req, res, next) {
+  try {
+    const orders = await orderHelpers.getAllOrders();
+    const stats = {
+      totalOrders: orders.length
+    };
+
+    res.render('admin/admin-orders', { 
+      title: 'Orders Management',
+      isAdmin: true,
+      isOrdersPage: true,
+      stats: stats,
+      orders: orders
+    });
+  } catch (err) {
+    console.error('Error fetching orders:', err);
+    res.render('error', { message: 'Failed to load orders', error: err });
+  }
+});
+
+/* PUT update order status */
+router.put('/orders/:id/status', async function(req, res, next) {
+  try {
+    const orderId = req.params.id;
+    const { status } = req.body;
+    const updatedOrder = await orderHelpers.updateOrderStatus(orderId, status);
+    res.json({ success: true, order: updatedOrder });
+  } catch (err) {
+    console.error('Error updating order status:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 module.exports = router;

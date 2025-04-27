@@ -31,20 +31,44 @@ const ensureDbConnection = async () => {
 module.exports = {
     searchProducts: (searchQuery) => {
         return new Promise((resolve, reject) => {
+            // If search query is empty or less than 2 characters, return empty result
+            if (!searchQuery || searchQuery.trim().length < 2) {
+                resolve([]);
+                return;
+            }
+
             ensureDbConnection()
                 .then(database => {
-                    // Create a query that searches in both name and description fields
+                    // Prepare search terms by splitting the query into words
+                    const searchTerms = searchQuery.trim().split(/\s+/).filter(term => term.length >= 2);
+                    
+                    // Create regex patterns for each term
+                    const regexPatterns = searchTerms.map(term => {
+                        return new RegExp(term.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
+                    });
+
+                    // Build the query with word boundaries for more accurate matching
                     const query = {
                         $or: [
-                            { name: { $regex: searchQuery, $options: 'i' } },
-                            { description: { $regex: searchQuery, $options: 'i' } },
-                            { category: { $regex: searchQuery, $options: 'i' } }
+                            { name: { $all: regexPatterns } },
+                            { description: { $all: regexPatterns } },
+                            { category: { $all: regexPatterns } }
                         ]
                     };
                     
-                    database.collection('products').find(query).toArray()
+                    database.collection('products').find(query)
+                        .collation({ locale: 'en', strength: 2 }) // Case-insensitive matching
+                        .toArray()
                         .then(products => {
-                            resolve(products);
+                            // Sort results by relevance (exact matches first)
+                            const sortedProducts = products.sort((a, b) => {
+                                const aNameMatch = a.name.toLowerCase().includes(searchQuery.toLowerCase());
+                                const bNameMatch = b.name.toLowerCase().includes(searchQuery.toLowerCase());
+                                if (aNameMatch && !bNameMatch) return -1;
+                                if (!aNameMatch && bNameMatch) return 1;
+                                return 0;
+                            });
+                            resolve(sortedProducts);
                         })
                         .catch(err => {
                             console.error('Error searching products:', err);

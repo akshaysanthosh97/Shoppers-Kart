@@ -12,25 +12,25 @@
       <!-- Admin Navigation -->
       <ul class="navbar-nav ms-auto align-items-center">
         <li class="nav-item">
-          <a class="nav-link {{#unless isProductsPage}}active{{/unless}}" aria-current="page" href="/admin/dashboard">
+          <a class="nav-link {{#unless isProductsPage}}active{{/unless}}" aria-current="page" href="/admin/dashboard" onclick="window.location.href='/admin/dashboard'; return false;">
             <i class="bi bi-speedometer2 me-2 fs-5 align-middle"></i>
             <span>Dashboard</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {{#if isProductsPage}}active{{/if}}" href="/admin/products">
+          <a class="nav-link {{#if isProductsPage}}active{{/if}}" href="/admin/products" onclick="window.location.href='/admin/products'; return false;">
             <i class="bi bi-box-seam me-2 fs-5 align-middle"></i>
             <span>Products</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link {{#if isUsersPage}}active{{/if}}" href="/admin/users" onclick="window.location.href='/admin/users'; return false;">
             <i class="bi bi-people me-2 fs-5 align-middle"></i>
             <span>Users</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link {{#if isSalesPage}}active{{/if}}" href="/admin/sales" onclick="window.location.href='/admin/sales'; return false;">
             <i class="bi bi-graph-up me-2 fs-5 align-middle"></i>
             <span>Sales</span>
           </a>
