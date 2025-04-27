@@ -5,8 +5,8 @@ const State = {
 };
 
 module.exports.connect = function(done){
-    const url = 'mongodb://localhost:27017';
-    const dbName = 'Shopping';
+    const url = process.env.MONGO_URI || 'mongodb://localhost:27017/Shopping';
+    const dbName = url.split('/').pop().split('?')[0];
 
     // If already connected, use existing connection
     if (State.db) {

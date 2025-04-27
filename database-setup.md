@@ -20,16 +20,6 @@ The Shopping Kart application uses MongoDB as its database. Follow these steps t
 
 2. The application is configured to connect to MongoDB at `mongodb://localhost:27017` with database name `Shopping`
 
-### Seeding the Database
-
-A seed script has been provided to populate the database with initial product data:
-
-1. Run the seed script:
-   ```
-   node seed-products.js
-   ```
-
-2. This will add sample products to your database for testing
 
 ## Database Structure
 

@@ -7,6 +7,8 @@ var hbs = require('hbs');
 var fs = require('fs');
 var fileupload = require('express-fileupload');
 var methodOverride = require('method-override');
+var session = require('express-session');
+require('dotenv').config();
 var db=require('./config/connection');
 
 
@@ -15,6 +17,21 @@ var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
 
 var app = express();
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'shoppingkartsecretkey',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+}));
+
+// Make user data available to all templates
+app.use((req, res, next) => {
+  res.locals.user = req.session.user;
+  res.locals.userLoggedIn = req.session.userLoggedIn;
+  next();
+});
 
 // Register partials recursively
 function registerPartials(dir, prefix) {
