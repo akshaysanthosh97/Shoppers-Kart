@@ -144,6 +144,9 @@ a {
   position: relative;
   font-weight: 700;
   background-color: rgba(13, 110, 253, 0.08);
+  border-radius: 8px;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
 }
 
 .navbar-glass .navbar-nav .nav-link.active:after {
