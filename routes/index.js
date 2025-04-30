@@ -4,6 +4,11 @@ var productHelpers = require('../helpers/product-helpers');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  // Add cache control headers to prevent caching
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  
   // This would normally be determined by authentication
   // For demo purposes, we're using a query parameter: ?admin=true
   const isAdmin = req.query.admin === 'true';
@@ -13,7 +18,8 @@ router.get('/', function(req, res, next) {
     res.render('index', { 
       title: 'Shoppers Kart',
       products: products,
-      isAdmin: isAdmin
+      isAdmin: isAdmin,
+      user: req.session.user
     });
   }).catch(err => {
     console.error('Error fetching products for homepage:', err);
@@ -23,6 +29,11 @@ router.get('/', function(req, res, next) {
 
 /* GET search results */
 router.get('/search', function(req, res, next) {
+  // Add cache control headers to prevent caching
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  
   const searchQuery = req.query.q;
   const isAdmin = req.query.admin === 'true';
   

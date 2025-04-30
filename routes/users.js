@@ -5,6 +5,10 @@ var userHelpers = require('../helpers/user-helpers');
 // Middleware to check if user is logged in
 const verifyLogin = (req, res, next) => {
   if (req.session.user) {
+    // Add cache control headers to prevent caching
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
     next();
   } else {
     res.redirect('/users/login');
@@ -18,11 +22,17 @@ router.get('/', function(req, res, next) {
 
 // Login routes
 router.get('/login', (req, res) => {
-  if (req.session.user) {
+  // Always add cache control headers to prevent caching
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  
+  if (req.session.user && req.session.userLoggedIn) {
     res.redirect('/');
   } else {
-    res.render('user/login', { loginError: req.session.loginError });
+    res.render('user/login', { loginError: req.session.loginError, signupSuccess: req.session.signupSuccess });
     req.session.loginError = null;
+    req.session.signupSuccess = null;
   }
 });
 
@@ -41,6 +51,11 @@ router.post('/login', (req, res) => {
 
 // Signup routes
 router.get('/signup', (req, res) => {
+  // Add cache control headers to prevent caching
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  
   if (req.session.user) {
     res.redirect('/');
   } else {
@@ -72,6 +87,11 @@ router.post('/signup', (req, res) => {
 
 // Logout route
 router.get('/logout', (req, res) => {
+  // Add cache control headers to prevent caching
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  
   req.session.user = null;
   req.session.userLoggedIn = false;
   res.redirect('/');
@@ -79,6 +99,11 @@ router.get('/logout', (req, res) => {
 
 // View products route
 router.get('/view-products', (req, res) => {
+  // Add cache control headers to prevent caching
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  
   res.render('user/view-products', {
     title: 'Shopping Kart',
     user: req.session.user
