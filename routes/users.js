@@ -39,9 +39,26 @@ router.get('/login', (req, res) => {
 router.post('/login', (req, res) => {
   userHelpers.doLogin(req.body)
     .then((user) => {
-      req.session.user = user;
-      req.session.userLoggedIn = true;
-      res.redirect('/');
+      // Regenerate session when signing in to prevent fixation
+      req.session.regenerate(function(err) {
+        if (err) {
+          console.error('Error regenerating session:', err);
+          req.session.loginError = 'Login failed. Please try again.';
+          return res.redirect('/users/login');
+        }
+        
+        // Store user information in session
+        req.session.user = user;
+        req.session.userLoggedIn = true;
+        
+        // Save the session before redirection to ensure page load does not happen before session is saved
+        req.session.save(function(err) {
+          if (err) {
+            console.error('Error saving session:', err);
+          }
+          res.redirect('/');
+        });
+      });
     })
     .catch((err) => {
       req.session.loginError = err.message;
@@ -92,10 +109,16 @@ router.get('/logout', (req, res) => {
   res.header('Expires', '-1');
   res.header('Pragma', 'no-cache');
   
-  req.session.user = null;
-  req.session.userLoggedIn = false;
-  res.redirect('/');
-});
+  // Properly destroy the session instead of just nullifying properties
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+    }
+    // Clear the session cookie
+    res.clearCookie('connect.sid');
+    res.redirect('/');
+  });
+}); 
 
 // View products route
 router.get('/view-products', (req, res) => {

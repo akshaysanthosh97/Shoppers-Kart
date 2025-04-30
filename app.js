@@ -21,27 +21,37 @@ var app = express();
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'shoppingkartsecretkey',
-  resave: true,
-  saveUninitialized: true,
+  resave: false,
+  saveUninitialized: false,
   cookie: { 
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
-  }
+    sameSite: 'lax' // Changed from 'strict' to 'lax' to allow back button navigation
+  },
+  rolling: true // Resets the cookie expiration time with each response
 }));
+
+// Add a middleware to check session validity on each request
+app.use((req, res, next) => {
+  if (req.session && req.session.user && !req.session._garbage) {
+    // Session is valid, refresh it
+    req.session._garbage = Date();
+    req.session.touch();
+  }
+  next();
+});
 
 // Make user data available to all templates
 app.use((req, res, next) => {
   res.locals.user = req.session.user;
   res.locals.userLoggedIn = req.session.userLoggedIn;
   
-  // Add cache control headers for authenticated routes to prevent browser caching issues
-  if (req.session.user) {
-    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-    res.header('Expires', '-1');
-    res.header('Pragma', 'no-cache');
-  }
+  // Add cache control headers for all routes to prevent browser caching issues
+  // This helps with the back button problem
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
   
   next();
 });
