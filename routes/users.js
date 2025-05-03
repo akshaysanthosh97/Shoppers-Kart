@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var userHelpers = require('../helpers/user-helpers');
+var productHelpers = require('../helpers/product-helpers');
 
 // Middleware to check if user is logged in
 const verifyLogin = (req, res, next) => {
@@ -127,10 +128,78 @@ router.get('/view-products', (req, res) => {
   res.header('Expires', '-1');
   res.header('Pragma', 'no-cache');
   
-  res.render('user/view-products', {
-    title: 'Shopping Kart',
-    user: req.session.user
+  // Get products from database
+  productHelpers.getAllProducts().then((products) => {
+    res.render('user/view-products', {
+      title: 'Shopping Kart',
+      user: req.session.user,
+      products: products
+    });
+  }).catch(err => {
+    console.error('Error fetching products:', err);
+    res.render('error', { message: 'Failed to load products', error: err });
   });
+});
+
+// Cart routes
+router.get('/cart', verifyLogin, async (req, res) => {
+  // Add cache control headers to prevent caching
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  
+  try {
+    const cartItems = await userHelpers.getCartProducts(req.session.user._id);
+    let totalAmount = 0;
+    if (cartItems.length > 0) {
+      totalAmount = cartItems.reduce((acc, curr) => {
+        return acc + (curr.quantity * curr.product.price);
+      }, 0);
+    }
+    
+    res.render('user/cart', {
+      title: 'Your Cart',
+      user: req.session.user,
+      cartItems: cartItems,
+      totalAmount: totalAmount
+    });
+  } catch (error) {
+    console.error('Error fetching cart:', error);
+    res.render('error', { message: 'Failed to load cart', error: error });
+  }
+});
+
+router.post('/add-to-cart', verifyLogin, async (req, res) => {
+  try {
+    await userHelpers.addToCart(req.session.user._id, req.body.productId);
+    // Get updated cart count after adding item
+    const cartCount = await userHelpers.getCartCount(req.session.user._id);
+    res.json({ status: 'success', cartCount: cartCount });
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+router.post('/remove-from-cart', verifyLogin, (req, res) => {
+  userHelpers.removeCartItem(req.session.user._id, req.body.productId)
+    .then(() => {
+      res.json({ status: true });
+    })
+    .catch((error) => {
+      console.error('Error removing from cart:', error);
+      res.status(500).json({ status: false, error: error.message });
+    });
+});
+
+router.get('/get-cart-count', verifyLogin, async (req, res) => {
+  try {
+    const count = await userHelpers.getCartCount(req.session.user._id);
+    res.json({ count: count });
+  } catch (error) {
+    console.error('Error getting cart count:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;

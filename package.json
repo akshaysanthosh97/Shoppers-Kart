@@ -6,6 +6,12 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "public/*"
+    ],
+    "ext": "js,json,hbs"
+  },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cookie-parser": "~1.4.4",

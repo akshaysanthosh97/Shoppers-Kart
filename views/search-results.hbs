@@ -35,8 +35,8 @@
           {{/if}}
           <h5 class="card-title">{{this.name}}</h5>
           <p class="card-text">{{this.description}}</p>
-          <p class="card-text font-weight-bold">${{this.price}}</p>
-          <a href="#" class="btn btn-primary">Add to Cart</a>
+          <p class="card-text font-weight-bold">{{this.price}}</p>
+          <button class="btn btn-primary add-to-cart" onclick="cartManager.addToCart('{{this._id}}')"><i class="bi bi-cart-plus"></i> Add to Cart</button>
         </div>
       </div>
     </div>

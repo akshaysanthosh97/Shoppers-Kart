@@ -15,6 +15,7 @@ var db=require('./config/connection');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
+var cartRouter = require('./routes/cart');
 
 var app = express();
 
@@ -93,6 +94,10 @@ hbs.registerHelper('eq', function (a, b) {
   return a === b;
 });
 
+hbs.registerHelper('multiply', function(a, b) {
+  return a * b;
+});
+
 // Log registered partials for debugging
 console.log('Registered partials:', Object.keys(hbs.handlebars.partials));
 
@@ -134,6 +139,7 @@ db.connect((err)=>{
     app.use('/', indexRouter);
     app.use('/users', usersRouter);
     app.use('/admin', adminRouter);
+    app.use('/cart', cartRouter);
     
     // Set up 404 handler after all routes
     app.use((req, res) => {

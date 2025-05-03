@@ -177,5 +177,161 @@ module.exports = {
                 reject(err);
             }
         });
+    },
+
+    // Cart Functions
+    addToCart: (userId, productId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                const cartObj = {
+                    user: new ObjectId(userId),
+                    products: [{
+                        item: new ObjectId(productId),
+                        quantity: 1
+                    }]
+                };
+
+                // Check if user already has a cart
+                const userCart = await database.collection('cart').findOne({ user: new ObjectId(userId) });
+
+                if (userCart) {
+                    // Check if product already exists in cart
+                    const productExists = userCart.products.findIndex(product => 
+                        product.item.toString() === productId.toString());
+
+                    if (productExists !== -1) {
+                        // Increment quantity if product already in cart
+                        await database.collection('cart').updateOne(
+                            { 
+                                user: new ObjectId(userId), 
+                                'products.item': new ObjectId(productId) 
+                            },
+                            { $inc: { 'products.$.quantity': 1 } }
+                        );
+                    } else {
+                        // Add new product to cart
+                        await database.collection('cart').updateOne(
+                            { user: new ObjectId(userId) },
+                            { 
+                                $push: { 
+                                    products: { item: new ObjectId(productId), quantity: 1 } 
+                                } 
+                            }
+                        );
+                    }
+                } else {
+                    // Create new cart for user
+                    await database.collection('cart').insertOne(cartObj);
+                }
+
+                resolve();
+            } catch (err) {
+                console.error('Error adding to cart:', err);
+                reject(err);
+            }
+        });
+    },
+
+    getCartProducts: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                // Aggregate to get cart with product details
+                const cartItems = await database.collection('cart').aggregate([
+                    {
+                        $match: { user: new ObjectId(userId) }
+                    },
+                    {
+                        $unwind: '$products'
+                    },
+                    {
+                        $lookup: {
+                            from: 'products',
+                            localField: 'products.item',
+                            foreignField: '_id',
+                            as: 'productDetails'
+                        }
+                    },
+                    {
+                        $project: {
+                            item: '$products.item',
+                            quantity: '$products.quantity',
+                            product: { $arrayElemAt: ['$productDetails', 0] }
+                        }
+                    }
+                ]).toArray();
+
+                resolve(cartItems);
+            } catch (err) {
+                console.error('Error getting cart products:', err);
+                reject(err);
+            }
+        });
+    },
+
+    getCartCount: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                // Get cart count
+                const count = await database.collection('cart').aggregate([
+                    {
+                        $match: { user: new ObjectId(userId) }
+                    },
+                    {
+                        $project: {
+                            count: { $size: '$products' }
+                        }
+                    }
+                ]).toArray();
+
+                if (count.length > 0) {
+                    resolve(count[0].count);
+                } else {
+                    resolve(0);
+                }
+            } catch (err) {
+                console.error('Error getting cart count:', err);
+                reject(err);
+            }
+        });
+    },
+
+    removeCartItem: (userId, productId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                await database.collection('cart').updateOne(
+                    { user: new ObjectId(userId) },
+                    { $pull: { products: { item: new ObjectId(productId) } } }
+                );
+
+                resolve();
+            } catch (err) {
+                console.error('Error removing cart item:', err);
+                reject(err);
+            }
+        });
     }
 };
