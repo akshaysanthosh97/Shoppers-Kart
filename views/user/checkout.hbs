@@ -1,0 +1,135 @@
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Checkout Steps -->
+            <div class="checkout-steps mb-4">
+                <div class="step active" id="shipping-step">
+                    <h4>1. Shipping Information</h4>
+                    <form id="shipping-form" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" required>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" required>
+                            </div>
+                            <div class="col">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" required>
+                            </div>
+                            <div class="col">
+                                <label for="zipCode" class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" id="zipCode" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Continue to Payment</button>
+                    </form>
+                </div>
+
+                <div class="step" id="payment-step">
+                    <h4>2. Payment Method</h4>
+                    <form id="payment-form" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="cardNumber" class="form-label">Card Number</label>
+                            <input type="text" class="form-control" id="cardNumber" required>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="expiryDate" class="form-label">Expiry Date</label>
+                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" required>
+                            </div>
+                            <div class="col">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nameOnCard" class="form-label">Name on Card</label>
+                            <input type="text" class="form-control" id="nameOnCard" required>
+                        </div>
+                        <button type="button" class="btn btn-secondary me-2">Back</button>
+                        <button type="submit" class="btn btn-primary">Review Order</button>
+                    </form>
+                </div>
+
+                <div class="step" id="review-step">
+                    <h4>3. Review Order</h4>
+                    <div class="order-summary">
+                        <h5>Order Items</h5>
+                        <div id="order-items-list">
+                            <!-- Order items will be populated dynamically -->
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Shipping:</span>
+                            <span id="shipping">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total:</span>
+                            <span id="total">$0.00</span>
+                        </div>
+                        <button type="button" class="btn btn-secondary me-2 mt-3">Back</button>
+                        <button type="button" class="btn btn-success mt-3">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Order Summary Sidebar -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Order Summary</h5>
+                    <div id="cart-items">
+                        <!-- Cart items will be populated dynamically -->
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span class="order-summary-subtotal">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span class="order-summary-shipping">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Total:</span>
+                        <span class="order-summary-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.checkout-steps .step {
+    display: none;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.checkout-steps .step.active {
+    display: block;
+}
+
+.order-summary {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+}
+</style>
+
+<script src="/javascripts/checkout.js"></script>

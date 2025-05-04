@@ -6,45 +6,45 @@
       <div class="cart-items-container">
       {{#if cartItems.length}}
         <div class="card shadow-sm mb-4">
-          <div class="card-body">
+          <div class="card-body p-0">
             <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr data-product-id="{{this._id}}">
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Actions</th>
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col" class="ps-4">Product</th>
+                    <th scope="col">Price</th>
+                    <th scope="col" class="text-center">Quantity</th>
+                    <th scope="col" class="text-end">Total</th>
+                    <th scope="col" class="text-center pe-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {{#each cartItems}}
-                    <tr data-product-id="{{this._id}}">
-                      <td>
+                    <tr data-product-id="{{this.product._id}}">
+                      <td class="ps-4">
                         <div class="d-flex align-items-center">
-                          <img src="{{this.product.image}}" alt="{{this.product.name}}" class="img-thumbnail me-3" style="width: 60px; height: 60px;">
+                          <img src="{{this.product.image}}" alt="{{this.product.name}}" class="img-thumbnail me-3" style="width: 60px; height: 60px; object-fit: cover;">
                           <div>
                             <h6 class="mb-0">{{this.product.name}}</h6>
                             <small class="text-muted">{{this.product.category}}</small>
                           </div>
                         </div>
                       </td>
-                      <td>{{this.product.price}}</td>
-                      <td>
-                        <div class="input-group quantity-controls">
-                          <button class="btn btn-outline-secondary btn-sm" onclick="cartManager.updateQuantity('{{this._id}}', -1)">
+                      <td>${{this.product.price}}</td>
+                      <td class="text-center">
+                        <div class="input-group input-group-sm justify-content-center quantity-controls" style="width: 100px;">
+                          <button class="btn btn-outline-secondary" type="button" onclick="cartManager.updateQuantity('{{this.product._id}}', -1)">
                             <i class="bi bi-dash"></i>
                           </button>
-                          <span class="quantity-value px-3">{{this.quantity}}</span>
-                          <button class="btn btn-outline-secondary btn-sm" onclick="cartManager.updateQuantity('{{this._id}}', 1)">
+                          <span class="quantity-value input-group-text">{{this.quantity}}</span>
+                          <button class="btn btn-outline-secondary" type="button" onclick="cartManager.updateQuantity('{{this.product._id}}', 1)">
                             <i class="bi bi-plus"></i>
                           </button>
                         </div>
                       </td>
-                      <td>${{multiply this.quantity this.product.price}}</td>
-                      <td>
-                        <button class="btn btn-outline-danger btn-sm" onclick="cartManager.removeFromCart('{{this._id}}')">
+                      <td class="text-end fw-bold">${{multiply this.quantity this.product.price}}</td>
+                      <td class="text-center pe-4">
+                        <button class="btn btn-outline-danger btn-sm" onclick="cartManager.removeFromCart('{{this.product._id}}')" title="Remove item">
                           <i class="bi bi-trash"></i>
                         </button>
                       </td>
@@ -55,36 +55,36 @@
             </div>
           </div>
         </div>
-        
-        <div class="row">
-          <div class="col-md-6 offset-md-6">
+
+        <div class="row justify-content-end">
+          <div class="col-md-6 col-lg-5 col-xl-4">
             <div class="card shadow-sm">
               <div class="card-body">
-                <h5 class="card-title">Order Summary</h5>
+                <h5 class="card-title mb-3">Order Summary</h5>
                 <div class="d-flex justify-content-between mb-2">
                   <span>Subtotal:</span>
-                  <span>${{totalAmount}}</span>
+                  <span class="order-summary-subtotal">${{totalAmount}}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                   <span>Shipping:</span>
                   <span>Free</span>
                 </div>
                 <hr>
-                <div class="d-flex justify-content-between mb-3">
+                <div class="d-flex justify-content-between mb-3 h5">
                   <strong>Total:</strong>
-                  <strong>${{totalAmount}}</strong>
+                  <strong class="order-summary-total">${{totalAmount}}</strong>
                 </div>
-                <button class="btn btn-primary w-100">Proceed to Checkout</button>
+                <a href="/users/checkout" class="btn btn-primary w-100">Proceed to Checkout</a>
               </div>
             </div>
           </div>
         </div>
       {{else}}
-        <div class="text-center py-5">
-          <i class="bi bi-cart-x" style="font-size: 4rem;"></i>
+        <div class="text-center py-5 border rounded bg-light">
+          <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
           <h3 class="mt-3">Your cart is empty</h3>
-          <p class="text-muted">Looks like you haven't added any products to your cart yet.</p>
-          <a href="/users/view-products" class="btn btn-primary mt-3">
+          <p class="text-muted mb-4">Looks like you haven't added any products yet.</p>
+          <a href="/users/view-products" class="btn btn-primary">
             <i class="bi bi-arrow-left me-2"></i>Continue Shopping
           </a>
         </div>
@@ -92,3 +92,19 @@
     </div>
   </div>
 </div>
+
+{{#*inline "multiply"}}
+  {{math quantity '*' price}}
+{{/inline}}
+
+<script>
+  // Ensure cartManager is available
+  if (typeof cartManager === 'undefined') {
+    console.error('cartManager is not defined. Ensure cart.js is loaded correctly.');
+    // Define dummy functions to prevent errors if cart.js failed
+    window.cartManager = {
+      updateQuantity: function() { console.error('cartManager.updateQuantity called but not defined.'); },
+      removeFromCart: function() { console.error('cartManager.removeFromCart called but not defined.'); }
+    };
+  }
+</script>

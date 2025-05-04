@@ -1,0 +1,150 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Account Navigation Sidebar -->
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="#profile" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                    <i class="bi bi-person me-2"></i>Profile
+                </a>
+                <a href="#orders" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-box me-2"></i>Orders
+                </a>
+                <a href="#wishlist" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-heart me-2"></i>Wishlist
+                </a>
+                <a href="#settings" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-gear me-2"></i>Settings
+                </a>
+            </div>
+        </div>
+
+        <!-- Account Content -->
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- Profile Section -->
+                <div class="tab-pane fade show active" id="profile">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Profile Information</h5>
+                            <form id="profile-form" class="needs-validation" novalidate>
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="fullName" value="{{user.name}}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" value="{{user.email}}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" value="{{user.phone}}">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Profile</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Section -->
+                <div class="tab-pane fade" id="orders">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Order History</h5>
+                            {{#if orders}}
+                                {{#each orders}}
+                                <div class="order-item mb-3 p-3 border rounded">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Order #{{this._id}}</h6>
+                                            <p class="mb-1 text-muted">Placed on: {{this.date}}</p>
+                                            <span class="badge bg-{{this.statusColor}}">{{this.status}}</span>
+                                        </div>
+                                        <div class="text-end">
+                                            <h6 class="mb-1">${{this.total}}</h6>
+                                            <a href="/users/order/{{this._id}}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{/each}}
+                            {{else}}
+                                <p class="text-center text-muted my-4">
+                                    <i class="bi bi-box2 d-block mb-3" style="font-size: 2rem;"></i>
+                                    No orders found
+                                </p>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wishlist Section -->
+                <div class="tab-pane fade" id="wishlist">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">My Wishlist</h5>
+                            <div class="row row-cols-1 row-cols-md-3 g-4" id="wishlist-items">
+                                {{#if wishlist}}
+                                    {{#each wishlist}}
+                                    <div class="col">
+                                        <div class="card h-100">
+                                            <img src="{{this.image}}" class="card-img-top" alt="{{this.name}}">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{this.name}}</h6>
+                                                <p class="card-text">${{this.price}}</p>
+                                                <button class="btn btn-sm btn-primary add-to-cart-btn" data-product-id="{{this._id}}">Add to Cart</button>
+                                                <button class="btn btn-sm btn-outline-danger remove-from-wishlist" data-product-id="{{this._id}}"><i class="bi bi-trash"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{/each}}
+                                {{else}}
+                                    <div class="col-12 text-center text-muted my-4">
+                                        <i class="bi bi-heart d-block mb-3" style="font-size: 2rem;"></i>
+                                        Your wishlist is empty
+                                    </div>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div class="tab-pane fade" id="settings">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Account Settings</h5>
+                            <form id="settings-form">
+                                <div class="mb-3">
+                                    <label class="form-label d-block">Email Notifications</label>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="orderUpdates" checked>
+                                        <label class="form-check-label" for="orderUpdates">Order updates</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="promotions">
+                                        <label class="form-check-label" for="promotions">Promotions and deals</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="currentPassword" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="currentPassword">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newPassword" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="newPassword">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirmPassword">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+21<script src="/javascripts/utils.js"></script>
+<script src="/javascripts/account.js"></script>

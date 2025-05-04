@@ -16,6 +16,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
 var cartRouter = require('./routes/cart');
+var checkoutRouter = require('./routes/checkout');
+var accountRouter = require('./routes/account');
+var aboutRouter = require('./routes/about');
+var wishlistRouter = require('./routes/wishlist');
 
 var app = express();
 
@@ -140,6 +144,10 @@ db.connect((err)=>{
     app.use('/users', usersRouter);
     app.use('/admin', adminRouter);
     app.use('/cart', cartRouter);
+    app.use('/checkout', checkoutRouter);
+    app.use('/account', accountRouter);
+    app.use('/about', aboutRouter);
+    app.use('/wishlist', wishlistRouter);
     
     // Set up 404 handler after all routes
     app.use((req, res) => {

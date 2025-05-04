@@ -132,7 +132,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to update cart item quantity
     function updateCartItemQuantity(productId, quantity) {
-        fetch('/users/update-cart', {
+        // Update UI immediately for better user experience
+        const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+        if (row) {
+            const qtyElem = row.querySelector('.cart-item-qty, .quantity-value');
+            const priceElem = row.querySelector('.cart-item-price');
+            const totalElem = row.querySelector('.cart-item-total');
+            
+            if (qtyElem) qtyElem.textContent = quantity;
+            
+            // Get the current price and update total
+            if (priceElem && totalElem) {
+                const price = parseFloat(priceElem.textContent.replace(/[^0-9.]/g, ''));
+                totalElem.textContent = '$' + (quantity * price).toFixed(2);
+            }
+        }
+
+        fetch('/cart/api/update-quantity', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -140,22 +156,28 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify({ 
                 productId: productId,
                 quantity: quantity
-            })
+            }),
+            credentials: 'include'
         })
         .then(response => response.json())
         .then(data => {
-            if (data.status === 'success') {
+            if (data.success) {
                 // Update cart count
-                updateCartCount(data.cartCount);
-                // Update total price
-                if (data.total) {
-                    const totalElement = document.getElementById('cart-total');
-                    if (totalElement) {
-                        totalElement.textContent = data.total;
-                    }
+                if (data.cartCount !== undefined) {
+                    updateCartCount(data.cartCount);
+                }
+                // Update summary totals
+                if (data.totalAmount !== undefined) {
+                    const subtotalElement = document.querySelector('.order-summary-subtotal');
+                    const totalElement = document.querySelector('.order-summary-total');
+                    
+                    if (subtotalElement) subtotalElement.textContent = '$' + parseFloat(data.totalAmount).toFixed(2);
+                    if (totalElement) totalElement.textContent = '$' + parseFloat(data.totalAmount).toFixed(2);
                 }
             } else {
-                throw new Error(data.message || 'Failed to update cart');
+                // Revert UI changes if server update fails
+                updateCartItemQuantity(productId, quantity - 1);
+                throw new Error(data.error || 'Failed to update cart');
             }
         })
         .catch(error => {
@@ -166,6 +188,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButtonText: 'OK'
             });
         });
+    }
+
+    // Function to handle + and - button clicks
+    function updateQuantity(productId, change) {
+        const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+        if (!row) return;
+        const qtyElem = row.querySelector('.cart-item-qty, .quantity-value');
+        let currentQty = parseInt(qtyElem ? qtyElem.textContent : '1', 10);
+        let newQty = currentQty + change;
+        if (newQty < 1) return; // Prevent decrement below 1
+        updateCartItemQuantity(productId, newQty);
     }
 
     // Function to remove item from cart
@@ -186,50 +219,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Remove the item's row from the table
                 const row = document.querySelector(`tr[data-product-id="${productId}"]`);
                 if (row) row.remove();
-                
                 // Update cart count and total
                 updateCartCount(data.cartCount);
-                if (data.total) {
-                    const totalElement = document.getElementById('cart-total');
+                if (data.totalAmount !== undefined) {
+                    const subtotalElement = document.querySelector('.order-summary-subtotal');
+                    const totalElement = document.querySelector('.order-summary-total');
+                    if (subtotalElement) {
+                        subtotalElement.textContent = '$' + data.totalAmount.toFixed(2);
+                    }
                     if (totalElement) {
-                        totalElement.textContent = data.total;
+                        totalElement.textContent = '$' + data.totalAmount.toFixed(2);
                     }
                 }
-                
-                // Show success message
-                Swal.fire({
-                    title: 'Removed!',
-                    text: 'Item removed from cart',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
+                // If no more items in cart, show empty cart message and hide cart table/summary
+                const remainingRows = document.querySelectorAll('tbody tr[data-product-id]');
+                if (remainingRows.length === 0) {
+                    const cartContainer = document.querySelector('.cart-items-container');
+                    if (cartContainer) {
+                        cartContainer.innerHTML = `<div class=\"text-center py-5 border rounded bg-light\"><i class=\"bi bi-cart-x text-muted\" style=\"font-size: 4rem;\"></i><h3 class=\"mt-3\">Your cart is empty</h3><p class=\"text-muted mb-4\">Looks like you haven't added any products yet.</p><a href=\"/users/view-products\" class=\"btn btn-primary\"><i class=\"bi bi-arrow-left me-2\"></i>Continue Shopping</a></div>`;
+                    }
+                }
+            } else {
+                throw new Error(data.message || 'Failed to remove item from cart');
             }
         })
         .catch(error => {
-            console.error('Error removing item:', error);
             Swal.fire({
                 title: 'Error!',
-                text: 'Failed to remove item',
+                text: error.message,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
         });
-    }
-
-    // Function to update quantity
-    function updateQuantity(productId, change) {
-        const row = document.querySelector(`tr[data-product-id="${productId}"]`);
-        if (!row) return;
-        
-        const currentQuantity = parseInt(row.querySelector('.quantity-value').textContent);
-        const newQuantity = currentQuantity + change;
-        
-        if (newQuantity > 0) {
-            updateCartItemQuantity(productId, newQuantity);
-        } else if (newQuantity === 0) {
-            removeFromCart(productId);
-        }
     }
 
     // Make cart functions globally accessible

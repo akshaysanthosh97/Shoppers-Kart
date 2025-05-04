@@ -181,15 +181,25 @@ router.post('/add-to-cart', verifyLogin, async (req, res) => {
   }
 });
 
-router.post('/remove-from-cart', verifyLogin, (req, res) => {
-  userHelpers.removeCartItem(req.session.user._id, req.body.productId)
-    .then(() => {
-      res.json({ status: true });
-    })
-    .catch((error) => {
-      console.error('Error removing from cart:', error);
-      res.status(500).json({ status: false, error: error.message });
+router.post('/remove-from-cart', verifyLogin, async (req, res) => {
+  try {
+    await userHelpers.removeCartItem(req.session.user._id, req.body.productId);
+    // Fetch updated cart details after removal
+    const cartItems = await userHelpers.getCartProducts(req.session.user._id);
+    const totalAmount = cartItems.length > 0 
+      ? cartItems.reduce((acc, curr) => acc + (curr.quantity * curr.product.price), 0)
+      : 0;
+    const cartCount = await userHelpers.getCartCount(req.session.user._id);
+
+    res.json({ 
+      status: 'success', 
+      cartCount: cartCount, 
+      totalAmount: totalAmount 
     });
+  } catch (error) {
+    console.error('Error removing from cart:', error);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
 });
 
 router.get('/get-cart-count', verifyLogin, async (req, res) => {

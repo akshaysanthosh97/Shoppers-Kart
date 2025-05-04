@@ -313,6 +313,33 @@ module.exports = {
         });
     },
 
+    // Update cart item quantity
+    updateCartQuantity: (userId, productId, quantity) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+                // Ensure quantity is at least 1
+                const qty = Math.max(1, parseInt(quantity, 10));
+                // Update the quantity for the specific product in the user's cart
+                const result = await database.collection('cart').updateOne(
+                    { user: new ObjectId(userId), 'products.item': new ObjectId(productId) },
+                    { $set: { 'products.$.quantity': qty } }
+                );
+                if (result.modifiedCount === 0) {
+                    reject(new Error('Failed to update cart quantity'));
+                    return;
+                }
+                resolve();
+            } catch (err) {
+                console.error('Error updating cart quantity:', err);
+                reject(err);
+            }
+        });
+    },
     removeCartItem: (userId, productId) => {
         return new Promise(async (resolve, reject) => {
             try {
@@ -322,10 +349,18 @@ module.exports = {
                     return;
                 }
 
+                // Remove the item from the products array
                 await database.collection('cart').updateOne(
                     { user: new ObjectId(userId) },
                     { $pull: { products: { item: new ObjectId(productId) } } }
                 );
+
+                // Check if the cart is now empty
+                const cart = await database.collection('cart').findOne({ user: new ObjectId(userId) });
+                if (cart && (!cart.products || cart.products.length === 0)) {
+                    // Delete the cart document if empty
+                    await database.collection('cart').deleteOne({ user: new ObjectId(userId) });
+                }
 
                 resolve();
             } catch (err) {
