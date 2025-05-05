@@ -1,11 +1,23 @@
-// Load price formatter utility
+// Account page functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Format all price elements on the page
     const formatPrices = () => {
+        // Format prices in product cards
         document.querySelectorAll('.card-text').forEach(priceElement => {
-            const price = parseFloat(priceElement.textContent.replace('$', ''));
+            const priceText = priceElement.textContent;
+            if (priceText && priceText.includes('$')) {
+                const price = window.priceFormatter.parse(priceText);
+                if (!isNaN(price)) {
+                    priceElement.textContent = window.priceFormatter.format(price);
+                }
+            }
+        });
+        
+        // Format any other price elements
+        document.querySelectorAll('[data-price]').forEach(element => {
+            const price = parseFloat(element.dataset.price);
             if (!isNaN(price)) {
-                priceElement.textContent = window.utils.formatPrice(price);
+                element.textContent = window.priceFormatter.format(price);
             }
         });
     };

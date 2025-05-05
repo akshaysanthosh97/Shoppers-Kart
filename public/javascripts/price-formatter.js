@@ -11,7 +11,15 @@ const priceFormatter = {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(numPrice);
+    },
+    
+    parse: function(priceString) {
+        if (!priceString) return 0;
+        // Remove currency symbols and non-numeric characters except decimal point
+        return parseFloat(priceString.replace(/[^0-9.]/g, '')) || 0;
     }
 };
+
 // Make formatter globally accessible
 window.priceFormatter = priceFormatter;
+

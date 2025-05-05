@@ -6,9 +6,24 @@ window.cartManager = {
     lastClickTime: 0,
     // Debounce time in milliseconds
     DEBOUNCE_TIME: 1000
+    // Using global priceFormatter utility instead of duplicating code
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Using the global priceFormatter utility
+    
+    // Function to format all price elements on the page
+    function formatAllPrices() {
+        document.querySelectorAll('.cart-item-price, .cart-item-total, .order-summary-subtotal, .order-summary-total').forEach(el => {
+            const price = window.priceFormatter.parse(el.textContent);
+            if (!isNaN(price)) {
+                el.textContent = window.priceFormatter.format(price);
+            }
+        });
+    }
+    
+    // Format prices on page load
+    formatAllPrices();
     // Function to update cart count in navbar
     function updateCartCount(count) {
         const cartCountElement = document.getElementById('cart-count');
@@ -70,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         title: 'Success!',
                         text: 'Item added to cart',
                         icon: 'success',
-                        timer: 1500,
+                        timer: 1000,
                         showConfirmButton: false
                     });
                 } else {
@@ -143,8 +158,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Get the current price and update total
             if (priceElem && totalElem) {
-                const price = parseFloat(priceElem.textContent.replace(/[^0-9.]/g, ''));
-                totalElem.textContent = '$' + (quantity * price).toFixed(2);
+                // Use the global priceFormatter utility
+                const price = window.priceFormatter.parse(priceElem.textContent);
+                totalElem.textContent = window.priceFormatter.format(quantity * price);
             }
         }
 
@@ -171,8 +187,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     const subtotalElement = document.querySelector('.order-summary-subtotal');
                     const totalElement = document.querySelector('.order-summary-total');
                     
-                    if (subtotalElement) subtotalElement.textContent = '$' + parseFloat(data.totalAmount).toFixed(2);
-                    if (totalElement) totalElement.textContent = '$' + parseFloat(data.totalAmount).toFixed(2);
+                    // Format and update subtotal and total with consistent formatting
+                    if (subtotalElement) subtotalElement.textContent = window.priceFormatter.format(data.totalAmount);
+                    if (totalElement) totalElement.textContent = window.priceFormatter.format(data.totalAmount);
+                    
+                    // Reformat all prices to ensure consistency
+                    formatAllPrices();
+                    
+                    // Update any other price elements that might be affected
+                    document.querySelectorAll('.cart-item-total').forEach(el => {
+                        const row = el.closest('tr');
+                        if (row) {
+                            const productId = row.getAttribute('data-product-id');
+                            const qtyElem = row.querySelector('.quantity-value');
+                            const priceElem = row.querySelector('.cart-item-price');
+                            
+                            if (productId && qtyElem && priceElem) {
+                                const qty = parseInt(qtyElem.textContent, 10);
+                                const price = window.priceFormatter.parse(priceElem.textContent);
+                                    
+                                el.textContent = window.priceFormatter.format(qty * price);
+                            }
+                        }
+                    });
                 }
             } else {
                 // Revert UI changes if server update fails
@@ -225,10 +262,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const subtotalElement = document.querySelector('.order-summary-subtotal');
                     const totalElement = document.querySelector('.order-summary-total');
                     if (subtotalElement) {
-                        subtotalElement.textContent = '$' + data.totalAmount.toFixed(2);
+                        subtotalElement.textContent = window.priceFormatter.format(data.totalAmount);
                     }
                     if (totalElement) {
-                        totalElement.textContent = '$' + data.totalAmount.toFixed(2);
+                        totalElement.textContent = window.priceFormatter.format(data.totalAmount);
                     }
                 }
                 // If no more items in cart, show empty cart message and hide cart table/summary

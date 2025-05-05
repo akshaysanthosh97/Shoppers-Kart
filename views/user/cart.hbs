@@ -30,7 +30,7 @@
                           </div>
                         </div>
                       </td>
-                      <td>${{this.product.price}}</td>
+                      <td class="cart-item-price">${{this.product.price}}</td>
                       <td class="text-center">
                         <div class="input-group input-group-sm justify-content-center quantity-controls" style="width: 100px;">
                           <button class="btn btn-outline-secondary" type="button" onclick="cartManager.updateQuantity('{{this.product._id}}', -1)">
@@ -42,7 +42,7 @@
                           </button>
                         </div>
                       </td>
-                      <td class="text-end fw-bold">${{multiply this.quantity this.product.price}}</td>
+                      <td class="text-end fw-bold cart-item-total">${{multiply this.quantity this.product.price}}</td>
                       <td class="text-center pe-4">
                         <button class="btn btn-outline-danger btn-sm" onclick="cartManager.removeFromCart('{{this.product._id}}')" title="Remove item">
                           <i class="bi bi-trash"></i>
