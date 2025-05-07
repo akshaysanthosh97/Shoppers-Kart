@@ -18,7 +18,7 @@ const verifyLogin = (req, res, next) => {
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.redirect('/users/view-products');
+  res.redirect('/users/user-index');
 });
 
 // Login routes
@@ -122,7 +122,7 @@ router.get('/logout', (req, res) => {
 }); 
 
 // View products route
-router.get('/view-products', (req, res) => {
+router.get('/user-index', (req, res) => {
   // Add cache control headers to prevent caching
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
   res.header('Expires', '-1');
@@ -130,7 +130,7 @@ router.get('/view-products', (req, res) => {
   
   // Get products from database
   productHelpers.getAllProducts().then((products) => {
-    res.render('user/view-products', {
+    res.render('user/user-index', {
       title: 'Shopping Kart',
       user: req.session.user,
       products: products
@@ -166,6 +166,41 @@ router.get('/cart', verifyLogin, async (req, res) => {
   } catch (error) {
     console.error('Error fetching cart:', error);
     res.render('error', { message: 'Failed to load cart', error: error });
+  }
+});
+
+// Wishlist routes
+router.post('/add-to-wishlist', verifyLogin, async (req, res) => {
+  try {
+    await userHelpers.addToWishlist(req.session.user._id, req.body.productId);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error adding to wishlist:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.post('/remove-from-wishlist', verifyLogin, async (req, res) => {
+  try {
+    await userHelpers.removeFromWishlist(req.session.user._id, req.body.productId);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error removing from wishlist:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.get('/wishlist', verifyLogin, async (req, res) => {
+  try {
+    const wishlistItems = await userHelpers.getWishlistItems(req.session.user._id);
+    res.render('user/wishlist', {
+      title: 'My Wishlist',
+      user: req.session.user,
+      wishlist: wishlistItems
+    });
+  } catch (error) {
+    console.error('Error loading wishlist:', error);
+    res.render('error', { message: 'Failed to load wishlist', error: error });
   }
 });
 
@@ -209,6 +244,27 @@ router.get('/get-cart-count', verifyLogin, async (req, res) => {
   } catch (error) {
     console.error('Error getting cart count:', error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Wishlist routes
+router.post('/add-to-wishlist', verifyLogin, async (req, res) => {
+  try {
+    await userHelpers.addToWishlist(req.session.user._id, req.body.productId);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error adding to wishlist:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.post('/remove-from-wishlist', verifyLogin, async (req, res) => {
+  try {
+    await userHelpers.removeFromWishlist(req.session.user._id, req.body.productId);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error removing from wishlist:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

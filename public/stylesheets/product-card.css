@@ -1,0 +1,44 @@
+.add-to-wishlist-btn {
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.add-to-wishlist-btn:hover {
+    transform: scale(1.2);
+    color: #ff2d55 !important;
+}
+
+.add-to-wishlist-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.add-to-wishlist-btn .bi-heart-fill {
+    color: #ff2d55;
+}
+
+/* Category filter styles */
+#category-filter .category-btn {
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+#category-filter .category-btn.active {
+    background-color: #0d6efd;
+    color: white;
+    font-weight: 500;
+}
+
+/* Product grid responsive adjustments */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+}

@@ -1,8 +1,167 @@
 const { ObjectId } = require('mongodb');
 const db = require('../config/connection');
 const bcrypt = require('bcrypt');
+const wishlistHelpers = require('./user-helpers-wishlist');
 
 module.exports = {
+    // Wishlist functions
+    getWishlistItems: wishlistHelpers.getWishlistItems,
+    addToWishlist: wishlistHelpers.addToWishlist,
+    removeFromWishlist: wishlistHelpers.removeFromWishlist,
+    
+    // Account functions
+    getUserDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                const user = await database.collection('users').findOne({ _id: new ObjectId(userId) });
+                
+                if (user) {
+                    // Don't send password to client
+                    delete user.password;
+                    resolve(user);
+                } else {
+                    reject(new Error('User not found'));
+                }
+            } catch (err) {
+                console.error('Error getting user details:', err);
+                reject(err);
+            }
+        });
+    },
+    
+    updateUserProfile: (userId, profileData) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+                
+                // Validate email format
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(profileData.email)) {
+                    reject(new Error('Invalid email format'));
+                    return;
+                }
+                
+                // Check if email is already in use by another user
+                const existingUser = await database.collection('users').findOne({
+                    email: profileData.email,
+                    _id: { $ne: new ObjectId(userId) }
+                });
+                
+                if (existingUser) {
+                    reject(new Error('Email is already in use by another account'));
+                    return;
+                }
+                
+                // Update user profile
+                const result = await database.collection('users').updateOne(
+                    { _id: new ObjectId(userId) },
+                    { $set: {
+                        name: profileData.name,
+                        email: profileData.email,
+                        phone: profileData.phone,
+                        updatedAt: new Date()
+                    }}
+                );
+                
+                if (result.modifiedCount === 0) {
+                    reject(new Error('Failed to update profile'));
+                    return;
+                }
+                
+                resolve();
+            } catch (err) {
+                console.error('Error updating user profile:', err);
+                reject(err);
+            }
+        });
+    },
+    
+    updateUserSettings: (userId, settingsData) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+                
+                // Get current user to verify password
+                const user = await database.collection('users').findOne({ _id: new ObjectId(userId) });
+                if (!user) {
+                    reject(new Error('User not found'));
+                    return;
+                }
+                
+                // If password change is requested
+                if (settingsData.currentPassword && settingsData.newPassword) {
+                    // Verify current password
+                    const passwordMatch = await bcrypt.compare(settingsData.currentPassword, user.password);
+                    if (!passwordMatch) {
+                        reject(new Error('Current password is incorrect'));
+                        return;
+                    }
+                    
+                    // Hash new password
+                    const hashedPassword = await bcrypt.hash(settingsData.newPassword, 10);
+                    
+                    // Update password and notification settings
+                    await database.collection('users').updateOne(
+                        { _id: new ObjectId(userId) },
+                        { $set: {
+                            password: hashedPassword,
+                            notifications: settingsData.notifications,
+                            updatedAt: new Date()
+                        }}
+                    );
+                } else {
+                    // Update only notification settings
+                    await database.collection('users').updateOne(
+                        { _id: new ObjectId(userId) },
+                        { $set: {
+                            notifications: settingsData.notifications,
+                            updatedAt: new Date()
+                        }}
+                    );
+                }
+                
+                resolve();
+            } catch (err) {
+                console.error('Error updating user settings:', err);
+                reject(err);
+            }
+        });
+    },
+    
+    // Cart function to clear cart after order placement
+    clearCart: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                // Remove the cart document for the user
+                await database.collection('cart').deleteOne({ user: new ObjectId(userId) });
+                resolve();
+            } catch (err) {
+                console.error('Error clearing cart:', err);
+                reject(err);
+            }
+        });
+    },
+    
     getAllUsers: () => {
         return new Promise((resolve, reject) => {
             const database = db.get();
@@ -365,6 +524,132 @@ module.exports = {
                 resolve();
             } catch (err) {
                 console.error('Error removing cart item:', err);
+                reject(err);
+            }
+        });
+    },
+
+    // Wishlist Functions
+    getWishlistItems: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                // Aggregate to get wishlist with product details
+                const wishlistItems = await database.collection('wishlist').aggregate([
+                    {
+                        $match: { user: new ObjectId(userId) }
+                    },
+                    {
+                        $unwind: '$products'
+                    },
+                    {
+                        $lookup: {
+                            from: 'products',
+                            localField: 'products',
+                            foreignField: '_id',
+                            as: 'productDetails'
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: { $arrayElemAt: ['$productDetails._id', 0] },
+                            name: { $arrayElemAt: ['$productDetails.name', 0] },
+                            price: { $arrayElemAt: ['$productDetails.price', 0] },
+                            description: { $arrayElemAt: ['$productDetails.description', 0] },
+                            category: { $arrayElemAt: ['$productDetails.category', 0] },
+                            image: { $arrayElemAt: ['$productDetails.image', 0] }
+                        }
+                    }
+                ]).toArray();
+
+                resolve(wishlistItems);
+            } catch (err) {
+                console.error('Error getting wishlist items:', err);
+                reject(err);
+            }
+        });
+    },
+
+    // Add item to wishlist
+    addToWishlist: (userId, productId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                // Check if user already has a wishlist
+                const userWishlist = await database.collection('wishlist').findOne({ user: new ObjectId(userId) });
+
+                if (userWishlist) {
+                    // Check if product already exists in wishlist
+                    const productExists = userWishlist.products.some(product => 
+                        product.toString() === productId.toString());
+
+                    if (productExists) {
+                        // Product already in wishlist, no need to add again
+                        resolve();
+                        return;
+                    }
+
+                    // Add new product to wishlist
+                    await database.collection('wishlist').updateOne(
+                        { user: new ObjectId(userId) },
+                        { 
+                            $push: { 
+                                products: new ObjectId(productId) 
+                            } 
+                        }
+                    );
+                } else {
+                    // Create new wishlist for user
+                    await database.collection('wishlist').insertOne({
+                        user: new ObjectId(userId),
+                        products: [new ObjectId(productId)]
+                    });
+                }
+
+                resolve();
+            } catch (err) {
+                console.error('Error adding to wishlist:', err);
+                reject(err);
+            }
+        });
+    },
+
+    // Remove item from wishlist
+    removeFromWishlist: (userId, productId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const database = db.get();
+                if (!database) {
+                    reject(new Error('Database connection not established'));
+                    return;
+                }
+
+                // Remove the item from the products array
+                await database.collection('wishlist').updateOne(
+                    { user: new ObjectId(userId) },
+                    { $pull: { products: new ObjectId(productId) } }
+                );
+
+                // Check if the wishlist is now empty
+                const wishlist = await database.collection('wishlist').findOne({ user: new ObjectId(userId) });
+                if (wishlist && (!wishlist.products || wishlist.products.length === 0)) {
+                    // Delete the wishlist document if empty
+                    await database.collection('wishlist').deleteOne({ user: new ObjectId(userId) });
+                }
+
+                resolve();
+            } catch (err) {
+                console.error('Error removing wishlist item:', err);
                 reject(err);
             }
         });

@@ -17,7 +17,7 @@ const checkAuth = (req, res, next) => {
 // About page route
 router.get('/', checkAuth, (req, res) => {
   try {
-    res.render('user/about', {
+    res.render('./about', {
       title: 'About Us',
       isLoggedIn: res.locals.isLoggedIn,
       user: res.locals.user

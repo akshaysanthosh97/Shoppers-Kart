@@ -26,7 +26,7 @@ router.get('/', checkAuth, async (req, res) => {
     res.render('user/wishlist', {
       title: 'My Wishlist',
       user: req.session.user,
-      wishlistItems: wishlistItems,
+      wishlist: wishlistItems, // Changed variable name to match what's used in the template
       isLoggedIn: true
     });
   } catch (error) {
@@ -39,10 +39,10 @@ router.get('/', checkAuth, async (req, res) => {
 router.post('/add', checkAuth, async (req, res) => {
   try {
     await userHelpers.addToWishlist(req.session.user._id, req.body.productId);
-    res.json({ status: 'success' });
+    res.json({ success: true });
   } catch (error) {
     console.error('Error adding to wishlist:', error);
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -50,10 +50,10 @@ router.post('/add', checkAuth, async (req, res) => {
 router.post('/remove', checkAuth, async (req, res) => {
   try {
     await userHelpers.removeFromWishlist(req.session.user._id, req.body.productId);
-    res.json({ status: 'success' });
+    res.json({ success: true });
   } catch (error) {
     console.error('Error removing from wishlist:', error);
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

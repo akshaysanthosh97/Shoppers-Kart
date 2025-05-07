@@ -49,6 +49,66 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.btn-success').addEventListener('click', function() {
         placeOrder();
     });
+    
+    // Place order function
+    function placeOrder() {
+        // Get shipping information
+        const fullName = document.getElementById('fullName').value;
+        const address = document.getElementById('address').value;
+        const city = document.getElementById('city').value;
+        const state = document.getElementById('state').value;
+        const zipCode = document.getElementById('zipCode').value;
+        
+        // Get payment information
+        const cardNumber = document.getElementById('cardNumber').value;
+        const nameOnCard = document.getElementById('nameOnCard').value;
+        
+        // Format shipping address
+        const shippingInfo = `${fullName}, ${address}, ${city}, ${state} ${zipCode}`;
+        
+        // Create order data
+        const orderData = {
+            shippingInfo: shippingInfo,
+            paymentMethod: 'Credit Card',
+            cardDetails: {
+                last4: cardNumber.slice(-4),
+                nameOnCard: nameOnCard
+            }
+        };
+        
+        // Submit order to server
+        fetch('/checkout/place-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+            credentials: 'include'
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to place order');
+            }
+        })
+        .then(data => {
+            if (data && data.success === false) {
+                throw new Error(data.message || 'Failed to place order');
+            }
+        })
+        .catch(error => {
+            console.error('Error placing order:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: error.message || 'Failed to place order',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
 
     // Update order summary
     function updateOrderSummary() {

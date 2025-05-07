@@ -7,9 +7,13 @@
     <h2 class="mb-4">Featured Products</h2>
     <div class="product-grid">
       {{#each products}}
-        {{> product-card id=this.id name=this.name price=this.price description=this.description image=this.image badge=this.badge}}
+        {{> product-card _id=this._id name=this.name price=this.price description=this.description image=this.image category=this.category}}
       {{/each}}
     </div>
   </section>
 </div>
+
+<!-- Include CSS and JS for product cards and functionality -->
+<link rel="stylesheet" href="/stylesheets/product-card.css">
+<script src="/javascripts/home.js"></script>
 

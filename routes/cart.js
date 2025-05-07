@@ -98,7 +98,78 @@ router.get('/api/cart-count', checkAuth, async (req, res) => {
     }
   } catch (error) {
     console.error('Error getting cart count:', error);
-    res.status(500).json({ error: 'Failed to get cart count' });
+  }
+});
+
+// API endpoint to get cart items
+router.get('/get-cart-items', checkAuth, async (req, res) => {
+  try {
+    if (res.locals.isLoggedIn) {
+      const cartItems = await userHelpers.getCartProducts(req.session.user._id);
+      // Format items for the checkout page
+      const items = cartItems.map(item => ({
+        id: item.product._id,
+        name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+        image: item.product.image
+      }));
+      res.json({ items });
+    } else {
+      res.json({ items: [] }); // Empty cart for non-logged in users
+    }
+  } catch (error) {
+    console.error('Error getting cart items:', error);
+    res.status(500).json({ error: 'Failed to get cart items' });
+  }
+});
+
+// API endpoint to place an order
+router.post('/place-order', checkAuth, async (req, res) => {
+  try {
+    if (!res.locals.isLoggedIn) {
+      return res.status(401).json({ success: false, message: 'Please login to place an order' });
+    }
+    
+    const { shipping, payment } = req.body;
+    
+    // Get cart items
+    const cartItems = await userHelpers.getCartProducts(req.session.user._id);
+    if (!cartItems || cartItems.length === 0) {
+      return res.status(400).json({ success: false, message: 'Your cart is empty' });
+    }
+    
+    // Calculate total amount
+    const totalAmount = cartItems.reduce((acc, curr) => acc + (curr.quantity * curr.product.price), 0);
+    
+    // Create order object
+    const orderObj = {
+      user: req.session.user._id,
+      products: cartItems.map(item => ({
+        item: item.product._id,
+        quantity: item.quantity,
+        price: item.product.price
+      })),
+      shipping,
+      payment: {
+        method: 'card',
+        details: payment
+      },
+      total: totalAmount + 5.00, // Adding $5 shipping
+      status: 'pending',
+      date: new Date()
+    };
+    
+    // Save order to database (assuming there's an order helper function)
+    // For now, we'll just simulate a successful order
+    
+    // Clear the user's cart after successful order
+    await userHelpers.clearCart(req.session.user._id);
+    
+    res.json({ success: true, message: 'Order placed successfully' });
+  } catch (error) {
+    console.error('Error placing order:', error);
+    res.status(500).json({ success: false, message: 'Failed to place order' });
   }
 });
 

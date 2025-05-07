@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 phone: document.getElementById('phone').value
             };
 
-            fetch('/users/update-profile', {
+            fetch('/account/update-profile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
 
-            fetch('/users/update-settings', {
+            fetch('/account/update-settings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const productId = this.getAttribute('data-product-id');
             if (!productId) return;
 
-            fetch('/users/remove-from-wishlist', {
+            fetch('/wishlist/remove', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

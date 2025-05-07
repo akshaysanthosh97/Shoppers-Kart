@@ -1,13 +1,18 @@
-<div class="product-card" style="position: relative;">
+<div class="product-card" style="position: relative;" data-category="{{category}}">
   <img src="{{image}}" alt="{{name}}" class="product-image">
+  <button class="add-to-wishlist-btn position-absolute" style="top: 10px; right: 10px; background: none; border: none; color: #ff4d6d; font-size: 1.5rem; z-index: 10;" data-product-id="{{_id}}">
+    <i class="bi bi-heart"></i>
+  </button>
   <div class="card-body">
     <h3 class="card-title">{{name}}</h3>
-    <p class="price">{{price}}</p>
+    <p class="price">${{price}}</p>
     <p class="description">{{description}}</p>
-    <button class="add-to-cart btn btn-primary add-to-cart-btn" data-product-id="{{_id}}">
-      <i class="bi bi-cart-plus"></i> Add to Cart
-    </button>
+    <div class="d-flex justify-content-center">
+      <button class="add-to-cart btn btn-primary add-to-cart-btn" data-product-id="{{_id}}">
+        <i class="bi bi-cart-plus"></i> Add to Cart
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- Cart functionality is handled by cart.js through the cartManager object -->
+<!-- Cart and wishlist functionality is handled by cart.js and categories.js -->
