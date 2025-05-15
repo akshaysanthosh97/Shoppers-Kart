@@ -148,6 +148,7 @@ db.connect((err)=>{
     app.use('/account', accountRouter);
     app.use('/about', aboutRouter);
     app.use('/wishlist', wishlistRouter);
+    app.use('/users/orders', require('./routes/orders'));
     
     // Set up 404 handler after all routes
     app.use((req, res) => {

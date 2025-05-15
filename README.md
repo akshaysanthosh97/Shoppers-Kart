@@ -29,23 +29,26 @@ The project is built with a focus on usability, performance, and scalability, ma
 ## ✨ Features
 
 ### Admin Dashboard
-- **Comprehensive Analytics**: View total products, users, orders, and revenue
-- **Product Management**: Add, edit, and delete products with ease
-- **Category Management**: Organize products into categories
-- **Inventory Tracking**: Monitor stock levels and receive low-stock alerts
-- **Order Management**: Process and track customer orders
+- **Comprehensive Analytics**: Real-time dashboard showing total products, users, orders, and revenue statistics
+- **Product Management**: Add, edit, and delete products with image upload support
+- **Order Management**: View and process customer orders with status tracking
+- **User Management**: Monitor and manage user accounts
+- **Sales Analytics**: Track revenue and order statistics
 
 ### User Interface
-- **Product Browsing**: Browse products by category or search
-- **Product Details**: View detailed product information
-- **Responsive Design**: Optimized for all device sizes
-- **User Authentication**: Secure login and registration
+- **Product Browsing**: Browse products with search functionality
+- **User Authentication**: Secure login and registration with session management
+- **Shopping Cart**: Add/remove products, update quantities, and persistent cart storage
+- **Wishlist**: Save favorite products for later
+- **Order Tracking**: View order history and status
+- **User Profile**: Manage account details and preferences
 
-### Product Features
-- **Image Upload**: Support for product images
-- **Price Management**: Set regular and sale prices
-- **Stock Tracking**: Automatic inventory updates
-- **Category Assignment**: Organize products by category
+### Shopping Features
+- **Cart Management**: Real-time cart updates and total calculation
+- **Checkout Process**: Streamlined checkout with shipping information
+- **Order History**: Detailed order tracking with status updates
+- **Wishlist Management**: Add/remove products from wishlist
+- **Search Functionality**: Search products across the catalog
 
 ## 🛠️ Technology Stack
 
@@ -67,31 +70,66 @@ The project is built with a focus on usability, performance, and scalability, ma
 
 ```
 shopping-kart/
+├── .gitignore               # Git ignore file
+├── README.md                # Project documentation
+├── app.js                   # Express application setup
 ├── bin/
 │   └── www                  # Application entry point
-├── public/                  # Static assets
-│   ├── images/              # Image assets
-│   └── stylesheets/         # CSS files
-├── routes/                  # Express routes
-│   ├── admin.js             # Admin routes
-│   ├── index.js             # Main routes
-│   └── users.js             # User routes
-├── views/                   # Handlebars templates
-│   ├── admin/               # Admin views
+├── config/
+│   ├── collection.js        # MongoDB collection names
+│   └── connection.js        # MongoDB connection setup
+├── database-setup.md        # Instructions for database setup
+├── helpers/
+│   ├── order-helpers.js     # Helper functions for order management
+│   ├── product-helpers.js   # Helper functions for product management
+│   ├── user-helpers-wishlist.js # Helper functions for user wishlist (likely merged or old)
+│   └── user-helpers.js      # Helper functions for user management
+├── models/                  # Database models (currently empty or not listed in detail)
+├── package-lock.json        # Exact versions of dependencies
+├── package.json             # Project dependencies and scripts
+├── public/
+│   ├── images/              # Static image assets (logos, placeholders)
+│   ├── javascripts/         # Client-side JavaScript files
+│   ├── product-images/      # Uploaded product images
+│   └── stylesheets/         # CSS files for styling
+├── routes/
+│   ├── about.js             # Routes for the About page
+│   ├── account.js           # Routes for user account management
+│   ├── admin.js             # Admin panel routes
+│   ├── cart.js              # Shopping cart routes
+│   ├── checkout.js          # Checkout process routes
+│   ├── index.js             # Main application routes (homepage, search)
+│   ├── orders.js            # User order management routes
+│   ├── users.js             # User authentication and profile routes
+│   └── wishlist.js          # Wishlist management routes
+├── views/
+│   ├── about.hbs            # About page template
+│   ├── admin/               # Admin panel views
 │   │   ├── admin-dashboard.hbs
+│   │   ├── admin-orders.hbs
+│   │   ├── admin-product-edit.hbs
 │   │   ├── admin-product-new.hbs
-│   │   └── admin-products.hbs
-│   ├── partials/            # Reusable view components
+│   │   ├── admin-products.hbs
+│   │   ├── admin-sales.hbs
+│   │   └── admin-users.hbs
+│   ├── error.hbs            # Error page template
+│   ├── index.hbs            # Home page template
+│   ├── layout.hbs           # Main layout template
+│   ├── partials/            # Reusable view components (navbar, footer, product cards)
 │   │   ├── footer.hbs
 │   │   ├── navbar.hbs
 │   │   └── product-card.hbs
-│   ├── user/                # User views
-│   ├── error.hbs            # Error page
-│   ├── index.hbs            # Home page
-│   └── layout.hbs           # Main layout
-├── app.js                   # Express application setup
-├── package.json             # Project dependencies
-└── README.md                # Project documentation
+│   ├── search-results.hbs   # Search results page template
+│   └── user/                # User-specific views
+│       ├── account.hbs
+│       ├── cart.hbs
+│       ├── checkout.hbs
+│       ├── login.hbs
+│       ├── order-confirmation.hbs
+│       ├── order-details.hbs
+│       ├── signup.hbs
+│       ├── user-index.hbs   # User dashboard/main page (potentially)
+│       └── wishlist.hbs
 ```
 
 ## 🚀 Installation
@@ -159,47 +197,111 @@ shopping-kart/
 
 ### Admin Routes
 
-- `GET /admin/dashboard` - View admin dashboard
+- `GET /admin/dashboard` - View admin dashboard with key metrics
 - `GET /admin/products` - View all products
-- `GET /admin/products/new` - Add new product form
+- `GET /admin/search-products` - Search products (AJAX endpoint)
+- `GET /admin/products/new` - Display form to add a new product
 - `POST /admin/products` - Create a new product
-- `GET /admin/products/:id/edit` - Edit product form
-- `PUT /admin/products/:id` - Update a product
+- `GET /admin/products/:id/edit` - Display form to edit an existing product
+- `PUT /admin/products/:id` - Update an existing product
 - `DELETE /admin/products/:id` - Delete a product
+- `GET /admin/users` - View all registered users
+- `GET /admin/orders` - View all customer orders
+- `GET /admin/sales` - View sales reports and analytics
 
 ### User Routes
 
-- `GET /` - Homepage
-- `GET /products` - View all products
-- `GET /products/:id` - View product details
-- `GET /categories/:id` - View products by category
+- `GET /` - Homepage, displays products
+- `GET /search` - Search for products
+- `GET /users/login` - Display user login page
+- `POST /users/login` - Handle user login attempt
+- `GET /users/signup` - Display user signup page
+- `POST /users/signup` - Handle user registration attempt
+- `GET /users/logout` - Log out the current user
+- `GET /users/user-index` - Display products for logged-in users (main user view)
+- `GET /cart` - View shopping cart (supports guest and logged-in users)
+- `POST /cart/api/update-quantity` - API to update product quantity in cart
+- `GET /cart/api/cart-count` - API to get current cart item count
+- `GET /cart/get-cart-items` - API to get cart items (e.g., for checkout)
+- `GET /checkout` - Display checkout page
+- `POST /checkout/place-order` - Place a new order
+- `GET /orders` - View current user's order history
+- `GET /orders/:orderId` - View details of a specific order
+- `GET /wishlist` - View user's wishlist
+- `POST /wishlist/add` - Add a product to the wishlist
+- `POST /wishlist/remove` - Remove a product from the wishlist
+- `GET /account` - View user account details page
+- `POST /account/update-profile` - Update user profile information
+- `POST /account/update-settings` - Update user account settings (e.g., password)
+- `GET /about` - Display the About Us page
+
+### API (Utility Endpoints for Client-Side)
+
+- `GET /cart/api/products/:id` - Get product details (used for guest cart functionality)
 
 ## 💾 Database Schema
 
-### Products
-- `id`: Unique identifier
-- `name`: Product name
-- `description`: Product description
-- `price`: Regular price
-- `salePrice`: Discounted price (optional)
-- `category`: Product category
-- `stock`: Current inventory level
-- `images`: Array of image URLs
-- `createdAt`: Creation timestamp
-- `updatedAt`: Last update timestamp
+Collections are managed in MongoDB. `ObjectId` is used for `_id` fields by default.
 
-### Categories
-- `id`: Unique identifier
-- `name`: Category name
-- `description`: Category description
-- `image`: Category image URL
+### `products` Collection
+- `_id`: ObjectId (Primary Key)
+- `name`: String (Product name)
+- `description`: String (Detailed product description)
+- `price`: Number (Regular price of the product)
+- `category`: String (Category name, e.g., "Electronics", "Books")
+- `image`: String (Path to the product image, e.g., `/product-images/<productId>.jpg`)
+- `badge`: String (Optional, e.g., "New", "Sale", "Featured")
+- `stock`: Number (Current inventory level - *Note: Stock tracking logic might need further implementation based on current helpers*)
+- `createdAt`: Date (Timestamp of product creation, automatically managed)
+- `updatedAt`: Date (Timestamp of last product update, automatically managed)
 
-### Users
-- `id`: Unique identifier
-- `username`: User's username
-- `email`: User's email address
-- `password`: Hashed password
-- `role`: User role (admin/customer)
+### `users` Collection
+- `_id`: ObjectId (Primary Key)
+- `name`: String (User's full name)
+- `email`: String (User's email address, unique)
+- `phone`: String (User's phone number, optional)
+- `password`: String (Hashed password)
+- `role`: String (User role, e.g., `user`, `admin`)
+- `isActive`: Boolean (Indicates if the user account is active or blocked, default: `true`)
+- `notifications`: Boolean (User preference for receiving notifications, optional)
+- `createdAt`: Date (Timestamp of user registration)
+- `updatedAt`: Date (Timestamp of last profile update)
+
+### `cart` Collection
+- `_id`: ObjectId (Primary Key)
+- `user`: ObjectId (References `users._id`)
+- `products`: Array of Objects
+  - `item`: ObjectId (References `products._id`)
+  - `quantity`: Number
+- `createdAt`: Date (Timestamp of cart creation)
+- `updatedAt`: Date (Timestamp of last cart modification)
+
+### `wishlist` Collection
+- `_id`: ObjectId (Primary Key)
+- `user`: ObjectId (References `users._id`)
+- `products`: Array of ObjectId (Each ObjectId references `products._id`)
+- `createdAt`: Date (Timestamp of wishlist creation)
+- `updatedAt`: Date (Timestamp of last wishlist modification)
+
+### `orders` Collection
+- `_id`: ObjectId (Primary Key)
+- `userId`: ObjectId (References `users._id`)
+- `products`: Array of Objects
+  - `item`: ObjectId (References `products._id`)
+  - `quantity`: Number
+  - `price`: Number (Price of the product at the time of order)
+- `shippingAddress`: Object
+  - `name`: String
+  - `address`: String
+  - `city`: String
+  - `state`: String
+  - `zip`: String
+  - `country`: String
+- `paymentMethod`: String (e.g., "Card", "COD")
+- `total`: Number (Total order amount, including shipping and taxes if any)
+- `status`: String (e.g., "Pending", "Placed", "Processing", "Shipped", "Delivered", "Cancelled")
+- `date`: Date (Timestamp of order placement)
+- `updatedAt`: Date (Timestamp of last order status update)
 
 ## 🌐 Deployment
 
